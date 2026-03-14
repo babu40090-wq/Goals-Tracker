@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>My Goals Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #7c6aff;
+    --accent2: #ff6a6a;
+    --accent3: #6affb0;
+    --text: #f0f0f5;
+    --muted: #7a7a90;
+    --gold: #ffc857;
+    --health: #6ae0ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  .app { max-width: 480px; margin: 0 auto; padding: 1.5rem 1rem 6rem; }
+
+  .header { margin-bottom: 1.25rem; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--accent); }
+  .header .date { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  .streak-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .streak-info .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .streak-info .num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--gold); line-height: 1; }
+  .streak-quote { font-size: 12px; color: var(--muted); max-width: 185px; text-align: right; line-height: 1.5; font-style: italic; }
+
+  .stats3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem; text-align: center; }
+  .stat .sn { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+  .stat .sl { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  .sec-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 0.75rem; }
+
+  .goal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; position: relative; overflow: hidden; transition: opacity 0.2s; }
+  .goal-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+  .goal-card.gym::before { background: var(--accent2); }
+  .goal-card.study::before { background: var(--accent); }
+  .goal-card.health::before { background: var(--health); }
+  .goal-card.done { opacity: 0.5; }
+
+  .goal-top { display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
+  .goal-icon { font-size: 18px; width: 34px; height: 34px; background: var(--surface2); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .goal-meta { flex: 1; min-width: 0; }
+  .goal-meta .gname { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .goal-meta .gtime { font-size: 11px; color: var(--muted); }
+  .chk { width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; color: transparent; transition: all 0.2s; flex-shrink: 0; user-select: none; }
+  .chk.on { color: #0a0a0f; }
+  .study .chk.on { background: var(--accent); border-color: var(--accent); }
+  .gym .chk.on { background: var(--accent2); border-color: var(--accent2); }
+  .health .chk.on { background: var(--health); border-color: var(--health); }
+
+  .prog-wrap { margin-top: 0.4rem; }
+  .prog-track { height: 3px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+  .gym .prog-fill { background: var(--accent2); }
+  .study .prog-fill { background: var(--accent); }
+  .health .prog-fill { background: var(--health); }
+  .prog-lbl { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  .week-dots { display: flex; gap: 4px; margin-top: 0.5rem; }
+  .wd { width: 22px; height: 22px; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted); border: 1px solid transparent; }
+  .wd.hit { background: rgba(106,255,176,0.13); color: var(--accent3); border-color: rgba(106,255,176,0.25); }
+  .wd.today { border-color: var(--accent); }
+  .gym .wd.hit { background: rgba(255,106,106,0.13); color: var(--accent2); border-color: rgba(255,106,106,0.25); }
+  .health .wd.hit { background: rgba(106,224,255,0.13); color: var(--health); border-color: rgba(106,224,255,0.25); }
+
+  .card-btns { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
+  .ebtn, .dbtn { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 3px 5px; border-radius: 6px; transition: background 0.15s; }
+  .ebtn:hover, .dbtn:hover { background: var(--surface2); }
+
+  .add-btn { width:100%; padding:0.85rem; background:var(--surface); border:1.5px dashed rgba(255,255,255,0.12); border-radius:14px; color:var(--muted); font-size:14px; font-family:'DM Sans',sans-serif; cursor:pointer; margin-bottom:1.5rem; transition:all 0.2s; }
+  .add-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  .wa-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
+  .wa-head { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:0.25rem; }
+  .wa-green { width:8px; height:8px; border-radius:50%; background:#25d366; flex-shrink:0; }
+  .wa-sub { font-size:12px; color:var(--muted); margin-bottom:1rem; line-height:1.5; }
+  .wa-num-row { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:0.55rem 0.9rem; margin-bottom:0.75rem; }
+  .wa-num-row span { font-size:12px; color:var(--muted); }
+  .wa-num-row b { font-size:13px; color:#25d366; font-weight:500; }
+  .wa-main-btn { width:100%; padding:0.9rem; background:#25d366; border:none; border-radius:12px; color:#fff; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition: transform 0.15s, opacity 0.15s; }
+  .wa-main-btn:active { transform: scale(0.97); opacity: 0.9; }
+  .wa-hint { font-size:11px; color:var(--muted); text-align:center; margin-top:0.65rem; line-height:1.6; }
+
+  .tip-box { background: rgba(124,106,255,0.08); border: 1px solid rgba(124,106,255,0.2); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .tip-box b { color: var(--accent); font-weight: 500; }
+
+  /* Modal */
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(6px); z-index:200; display:none; align-items:flex-end; justify-content:center; padding:1rem; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:22px; padding:1.5rem; width:100%; max-width:440px; animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+  .modal h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:1.25rem; }
+  .fld { margin-bottom:0.9rem; }
+  .fld label { font-size:11px; color:var(--muted); display:block; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px; }
+  .fld input, .fld select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:0.7rem 0.9rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition: border-color 0.2s; }
+  .fld input:focus, .fld select:focus { border-color:var(--accent); }
+  .fld select option { background:#13131a; }
+  .mbtns { display:flex; gap:8px; margin-top:1.25rem; }
+  .bcnl { flex:1; padding:0.75rem; background:var(--surface2); border:1px solid var(--border); border-radius:10px; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; }
+  .bsav { flex:2; padding:0.75rem; background:var(--accent); border:none; border-radius:10px; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+
+  /* Confirm delete modal */
+  .confirm-modal { background:var(--surface); border:1px solid var(--border); border-radius:22px; padding:1.5rem; width:100%; max-width:360px; text-align:center; animation: slideUp 0.2s ease; }
+  .confirm-modal h3 { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:0.5rem; }
+  .confirm-modal p { font-size:13px; color:var(--muted); margin-bottom:1.25rem; line-height:1.5; }
+  .bdel { flex:2; padding:0.75rem; background:var(--accent2); border:none; border-radius:10px; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>my <span>goals</span></h1>
+    <div class="date" id="todayDate"></div>
+  </div>
+
+  <div class="streak-bar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:26px">🔥</div>
+      <div class="streak-info">
+        <div class="lbl">Day streak</div>
+        <div class="num" id="streakNum">0</div>
+      </div>
+    </div>
+    <div class="streak-quote" id="motivQ"></div>
+  </div>
+
+  <div class="stats3">
+    <div class="stat"><div class="sn" style="color:var(--accent3)" id="sDone">0</div><div class="sl">Done today</div></div>
+    <div class="stat"><div class="sn" style="color:var(--accent)" id="sTotal">0</div><div class="sl">Total goals</div></div>
+    <div class="stat"><div class="sn" style="color:var(--gold)" id="sPct">0%</div><div class="sl">Today rate</div></div>
+  </div>
+
+  <div class="sec-title">Today's habits</div>
+  <div id="goalsList"></div>
+  <button class="add-btn" onclick="openAdd()">+ Add new goal</button>
+
+  <div class="wa-box">
+    <div class="wa-head"><div class="wa-green"></div>WhatsApp daily report</div>
+    <div class="wa-sub">Tap below to send today's full report to your WhatsApp. Opens pre-filled — just hit Send.</div>
+    <div class="wa-num-row">
+      <span>📱 Your number:</span>
+      <b>+91 86672 81339</b>
+    </div>
+    <button class="wa-main-btn" onclick="sendWA()">📤 Send today's report to WhatsApp</button>
+    <div class="wa-hint">Works on mobile. Opens WhatsApp with summary pre-filled. Tap Send — done in 2 seconds.</div>
+  </div>
+
+  <div class="tip-box">
+    💡 <b>Pro tip:</b> On Chrome (Android), tap the 3-dot menu → <b>Add to Home Screen</b>. This tracker will sit on your phone like an app — one tap away every morning and night. Your data is saved automatically and never lost.
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="mTitle">Add goal</h3>
+    <div class="fld"><label>Goal name</label><input id="gName" placeholder="e.g. Study Power BI for 1 hour"/></div>
+    <div class="fld">
+      <label>Category</label>
+      <select id="gCat">
+        <option value="study">📚 Study / Career</option>
+        <option value="gym">💪 Gym / Workout</option>
+        <option value="health">💊 Health / Wellness</option>
+      </select>
+    </div>
+    <div class="fld"><label>Time / Schedule</label><input id="gTime" placeholder="e.g. 7:00 PM – 8:30 PM"/></div>
+    <div class="fld"><label>Monthly target (days)</label><input type="number" id="gTarget" value="25" min="1" max="31"/></div>
+    <div class="mbtns">
+      <button class="bcnl" onclick="closeModal()">Cancel</button>
+      <button class="bsav" onclick="saveGoal()">Save goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-modal">
+    <h3>Remove goal?</h3>
+    <p id="confirmText">This will remove the goal and all its history.</p>
+    <div class="mbtns">
+      <button class="bcnl" onclick="closeConfirm()">Keep it</button>
+      <button class="bdel" onclick="confirmDelete()">Yes, remove</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WA_NUMBER = '918667281339';
+const DAYS_SHORT = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+const QUOTES = [
+  'BA/DA career is loading... 🚀',
+  'Discipline beats motivation.',
+  'Every tick = closer to your goal.',
+  'Future analyst in progress 📊',
+  'One rep. One chapter. One day. 💪',
+  'Consistency is your edge.',
+  'Your health is your wealth 💙',
+  'Small habits. Big results.',
+  'Show up. Every. Single. Day.',
+];
+
+const today = new Date();
+const todayKey = today.toISOString().split('T')[0];
+
+const DEFAULT_GOALS = [
+  { id:1, name:'Gym workout', cat:'gym', time:'6:00 AM – 7:30 AM', target:26, days:{} },
+  { id:2, name:'Study SQL / Excel / Python', cat:'study', time:'8:00 PM – 9:30 PM', target:28, days:{} },
+  { id:3, name:'Read BA/DA articles (30 min)', cat:'study', time:'Any time', target:25, days:{} },
+  { id:4, name:'Mock interview / LinkedIn (15 min)', cat:'study', time:'Lunch break', target:20, days:{} },
+  { id:5, name:'Take vitamins & tablets', cat:'health', time:'After breakfast', target:30, days:{} },
+  { id:6, name:'Sleep on time', cat:'health', time:'By 11:00 PM', target:30, days:{} },
+];
+
+let goals = JSON.parse(localStorage.getItem('mg_final_v1') || 'null') || JSON.parse(JSON.stringify(DEFAULT_GOALS));
+let editId = null;
+let deleteId = null;
+
+function persist() { localStorage.setItem('mg_final_v1', JSON.stringify(goals)); }
+
+function getWeekKeys() {
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(today); d.setDate(d.getDate() - (6-i));
+    return d.toISOString().split('T')[0];
+  });
+}
+
+function calcStreak() {
+  let s = 0; const d = new Date(today);
+  while(true) {
+    const k = d.toISOString().split('T')[0];
+    if (!goals.length || !goals.every(g => g.days[k])) break;
+    s++; d.setDate(d.getDate()-1);
+  }
+  return s;
+}
+
+function monthDone(g) {
+  const prefix = todayKey.slice(0,7);
+  return Object.keys(g.days).filter(k => k.startsWith(prefix) && g.days[k]).length;
+}
+
+function render() {
+  document.getElementById('todayDate').textContent = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('motivQ').textContent = QUOTES[new Date().getHours() % QUOTES.length];
+  document.getElementById('streakNum').textContent = calcStreak();
+
+  const doneCnt = goals.filter(g => g.days[todayKey]).length;
+  document.getElementById('sDone').textContent = doneCnt;
+  document.getElementById('sTotal').textContent = goals.length;
+  document.getElementById('sPct').textContent = goals.length ? Math.round(doneCnt/goals.length*100)+'%' : '0%';
+
+  const list = document.getElementById('goalsList');
+  list.innerHTML = '';
+  const wk = getWeekKeys();
+  const icons = { gym:'💪', study:'📚', health:'💊' };
+
+  goals.forEach(g => {
+    const done = !!g.days[todayKey];
+    const md = monthDone(g);
+    const pct = Math.min(100, Math.round(md / g.target * 100));
+
+    const el = document.createElement('div');
+    el.className = `goal-card ${g.cat}${done?' done':''}`;
+    el.innerHTML = `
+      <div class="card-btns">
+        <button class="ebtn" onclick="openEdit(${g.id})" title="Edit">✏️</button>
+        <button class="dbtn" onclick="askDelete(${g.id})" title="Remove">🗑</button>
+      </div>
+      <div class="goal-top">
+        <div class="goal-icon">${icons[g.cat]||'🎯'}</div>
+        <div class="goal-meta">
+          <div class="gname">${g.name}</div>
+          <div class="gtime">${g.time}</div>
+        </div>
+        <div class="chk${done?' on':''}" onclick="toggle(${g.id})">${done?'✓':''}</div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div class="prog-lbl"><span>${md}/${g.target} days this month</span><span>${pct}%</span></div>
+      </div>
+      <div class="week-dots">${wk.map(k => {
+        const dLabel = DAYS_SHORT[new Date(k).getDay()];
+        return `<div class="wd${g.days[k]?' hit':''}${k===todayKey?' today':''}">${dLabel}</div>`;
+      }).join('')}</div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function toggle(id) {
+  const g = goals.find(x=>x.id===id);
+  if(g) { g.days[todayKey]=!g.days[todayKey]; persist(); render(); }
+}
+
+function askDelete(id) {
+  const g = goals.find(x=>x.id===id);
+  deleteId = id;
+  document.getElementById('confirmText').textContent = `Remove "${g.name}"? All its history will be lost.`;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function confirmDelete() {
+  goals = goals.filter(x=>x.id!==deleteId);
+  deleteId = null;
+  persist(); closeConfirm(); render();
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  deleteId = null;
+}
+
+function openAdd() {
+  editId = null;
+  document.getElementById('mTitle').textContent = 'Add new goal';
+  document.getElementById('gName').value = '';
+  document.getElementById('gCat').value = 'study';
+  document.getElementById('gTime').value = '';
+  document.getElementById('gTarget').value = 25;
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('gName').focus(), 100);
+}
+
+function openEdit(id) {
+  const g = goals.find(x=>x.id===id); editId = id;
+  document.getElementById('mTitle').textContent = 'Edit goal';
+  document.getElementById('gName').value = g.name;
+  document.getElementById('gCat').value = g.cat;
+  document.getElementById('gTime').value = g.time;
+  document.getElementById('gTarget').value = g.target;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function saveGoal() {
+  const name = document.getElementById('gName').value.trim();
+  if(!name) { document.getElementById('gName').focus(); return; }
+  const obj = {
+    name,
+    cat: document.getElementById('gCat').value,
+    time: document.getElementById('gTime').value.trim() || 'Anytime',
+    target: parseInt(document.getElementById('gTarget').value) || 25
+  };
+  if(editId) {
+    Object.assign(goals.find(x=>x.id===editId), obj);
+  } else {
+    goals.push({ id: Date.now(), ...obj, days:{} });
+  }
+  persist(); closeModal(); render();
+}
+
+function sendWA() {
+  const doneCnt = goals.filter(g=>g.days[todayKey]).length;
+  const streak = calcStreak();
+  const dateStr = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+  const pct = goals.length ? Math.round(doneCnt/goals.length*100) : 0;
+  const lines = goals.map(g=>`${g.days[todayKey]?'✅':'⬜'} ${g.name}\n   ⏰ ${g.time}`).join('\n');
+  const status = pct===100
+    ? '🏆 PERFECT DAY! Every goal crushed!'
+    : pct>=66
+    ? '💪 Great progress! Almost there!'
+    : pct>=33
+    ? '⚡ Keep going! You can finish strong!'
+    : '🎯 Start now — the day is still yours!';
+
+  const msg =
+`🎯 *Daily Goals Report*
+📅 ${dateStr}
+
+${lines}
+
+━━━━━━━━━━━━━━━
+📊 *${doneCnt}/${goals.length} done today (${pct}%)*
+🔥 *Streak: ${streak} day${streak!==1?'s':''}*
+
+${status}
+
+_My Goals Tracker_`;
+
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// Close modals on overlay tap
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+  if(e.target === this) closeConfirm();
+});
+
+render();
+</script>
+</body>
+</html>
