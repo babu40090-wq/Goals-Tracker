@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>BA + DA Roadmap Tracker v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c26;--border:rgba(255,255,255,0.08);--accent:#7c6aff;--text:#f0f0f5;--muted:#7a7a90;--gold:#ffc857;--green:#6affb0;--blue:#6ae0ff;--red:#ff6a6a;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+.app{max-width:520px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+
+.hdr h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+.hdr h1 span{color:var(--accent);}
+.hdr p{font-size:12px;color:var(--muted);margin-top:3px;margin-bottom:1.25rem;}
+.complete-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(106,255,176,0.15);color:var(--green);border:1px solid rgba(106,255,176,0.25);margin-bottom:1rem;}
+
+.prog-overview{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.25rem;}
+.prog-overview .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;}
+.prog-overview .row .lbl{font-size:13px;color:var(--muted);}
+.prog-overview .row .val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.prog-track{height:8px;background:var(--surface2);border-radius:8px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--blue));transition:width 0.5s ease;}
+
+.nav{display:flex;gap:6px;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:4px;}
+.nav::-webkit-scrollbar{display:none;}
+.nav button{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.nav button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+.phase-label{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:0.6rem;margin-top:1.25rem;display:flex;align-items:center;gap:8px;}
+.phase-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.lesson{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:0.9rem 1rem;margin-bottom:0.7rem;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.lesson::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.lesson.sql::before{background:#f97316;}
+.lesson.excel::before{background:#22c55e;}
+.lesson.powerbi::before{background:#eab308;}
+.lesson.tableau::before{background:#60a5fa;}
+.lesson.ba::before{background:var(--accent);}
+.lesson.jira::before{background:#06b6d4;}
+.lesson.wireframe::before{background:#f472b6;}
+.lesson.python::before{background:#a78bfa;}
+.lesson.stats::before{background:var(--red);}
+.lesson.portfolio::before{background:var(--gold);}
+.lesson.done{opacity:0.45;}
+
+.lesson-top{display:flex;align-items:flex-start;gap:10px;}
+.lesson-icon{font-size:16px;width:32px;height:32px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.lesson-body{flex:1;min-width:0;}
+.lesson-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;}
+.lesson-meta{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.lesson-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.btn-watch{font-size:11px;padding:4px 12px;border-radius:20px;background:rgba(124,106,255,0.15);color:var(--accent);border:1px solid rgba(124,106,255,0.25);text-decoration:none;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.btn-watch:hover{background:var(--accent);color:#fff;}
+.btn-done{font-size:11px;padding:4px 12px;border-radius:20px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.btn-done.completed{background:rgba(106,255,176,0.15);color:var(--green);border-color:rgba(106,255,176,0.25);}
+.cat-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface2);color:var(--muted);}
+.new-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,200,87,0.15);color:var(--gold);}
+
+.ai-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem;}
+.ai-head{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:0.25rem;}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.ai-sub{font-size:12px;color:var(--muted);margin-bottom:0.85rem;}
+.chat-log{max-height:280px;overflow-y:auto;margin-bottom:0.75rem;display:flex;flex-direction:column;gap:8px;}
+.chat-log::-webkit-scrollbar{width:3px;}
+.chat-log::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.msg{padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.6;max-width:92%;}
+.msg.ai{background:var(--surface2);color:var(--text);align-self:flex-start;border-radius:4px 12px 12px 12px;}
+.msg.user{background:rgba(124,106,255,0.2);color:var(--text);align-self:flex-end;border-radius:12px 4px 12px 12px;}
+.msg.loading{color:var(--muted);font-style:italic;}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{padding:0.65rem 1rem;background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.quick-qs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem;}
+.qq{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.qq:hover{border-color:var(--accent);color:var(--accent);}
+
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;}
+.stat-card .sn{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+.stat-card .sl{font-size:11px;color:var(--muted);margin-top:4px;}
+.cat-prog{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;margin-bottom:0.65rem;}
+.cp-row{display:flex;align-items:center;gap:10px;margin-bottom:0.35rem;}
+.cp-name{font-size:12px;font-weight:500;width:80px;flex-shrink:0;}
+.cp-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:5px;overflow:hidden;}
+.cp-bar{height:100%;border-radius:5px;transition:width 0.4s;}
+.cp-pct{font-size:11px;color:var(--muted);width:36px;text-align:right;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <h1>BA + DA <span>Roadmap</span></h1>
+    <p>Complete 100% job-ready roadmap — Business Analyst + Data Analyst</p>
+  </div>
+  <div class="complete-badge">✅ 100% Complete Roadmap — All topics covered</div>
+
+  <div class="prog-overview">
+    <div class="row"><span class="lbl">Overall progress</span><span class="val" id="overallPct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="overallBar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;">
+      <span style="font-size:11px;color:var(--muted)" id="doneCount">0 of 0 done</span>
+      <span style="font-size:11px;color:var(--gold)" id="streakTxt">🔥 0 day streak</span>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="active" onclick="setTab('all')">All</button>
+    <button onclick="setTab('sql')">🗄 SQL</button>
+    <button onclick="setTab('excel')">📊 Excel</button>
+    <button onclick="setTab('powerbi')">📈 Power BI</button>
+    <button onclick="setTab('tableau')">🎨 Tableau</button>
+    <button onclick="setTab('ba')">🧩 BA Skills</button>
+    <button onclick="setTab('jira')">🔧 Jira</button>
+    <button onclick="setTab('wireframe')">✏️ Wireframe</button>
+    <button onclick="setTab('stats')">📐 Statistics</button>
+    <button onclick="setTab('python')">🐍 Python</button>
+    <button onclick="setTab('portfolio')">💼 Portfolio</button>
+    <button onclick="setTab('ai')">🤖 AI Tutor</button>
+    <button onclick="setTab('mystats')">📊 My Stats</button>
+  </div>
+
+  <div id="lessonsView"><div id="lessonsList"></div></div>
+
+  <div id="aiView" style="display:none">
+    <div class="ai-box">
+      <div class="ai-head"><div class="ai-dot"></div>AI Study Tutor</div>
+      <div class="ai-sub">Ask anything about BA, DA, SQL, Power BI, Tableau, career switch. Powered by Claude AI.</div>
+      <div class="quick-qs">
+        <span class="qq" onclick="askQ('Where should I start as someone switching to BA/DA with operations background?')">Where to start?</span>
+        <span class="qq" onclick="askQ('Explain SQL JOINs with a simple payroll example')">SQL JOINs?</span>
+        <span class="qq" onclick="askQ('What is the difference between Power BI and Tableau? Which should I learn first?')">Power BI vs Tableau?</span>
+        <span class="qq" onclick="askQ('How do I write a Business Requirements Document (BRD)?')">What is BRD?</span>
+        <span class="qq" onclick="askQ('How to build a DA portfolio with no experience?')">Build portfolio?</span>
+        <span class="qq" onclick="askQ('What BA/DA jobs are available in Chennai and what skills do they need?')">Jobs in Chennai?</span>
+        <span class="qq" onclick="askQ('How to prepare for a Business Analyst interview? Give me top 10 questions.')">Interview prep?</span>
+        <span class="qq" onclick="askQ('What is Agile methodology and how does a BA work in a Scrum team?')">Agile & Scrum?</span>
+      </div>
+      <div class="chat-log" id="chatLog">
+        <div class="msg ai">👋 Hi Mohan! I'm your personal BA + DA study tutor. Ask me anything — concepts, career advice, interview prep, or explain any topic you're studying. I know your background in payroll & operations so I'll relate everything to what you already know!</div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" placeholder="Ask anything... e.g. Explain what a use case diagram is" onkeydown="if(event.key==='Enter')sendMsg()"/>
+        <button class="chat-send" onclick="sendMsg()">Ask ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mystatsView" style="display:none">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="sn" style="color:var(--accent)" id="st1">0</div><div class="sl">Lessons completed</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--green)" id="st2">0%</div><div class="sl">Overall progress</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--gold)" id="st3">0</div><div class="sl">Day streak 🔥</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--blue)" id="st4">0h</div><div class="sl">Hours studied (est.)</div></div>
+    </div>
+    <div class="phase-label">Progress by category</div>
+    <div id="catProgressList"></div>
+  </div>
+</div>
+
+<script>
+const CAT_COLORS={sql:'#f97316',excel:'#22c55e',powerbi:'#eab308',tableau:'#60a5fa',ba:'#7c6aff',jira:'#06b6d4',wireframe:'#f472b6',stats:'#ff6a6a',python:'#a78bfa',portfolio:'#ffc857'};
+const CAT_NAMES={sql:'SQL',excel:'Excel',powerbi:'Power BI',tableau:'Tableau',ba:'BA Skills',jira:'Jira & Tools',wireframe:'Wireframing',stats:'Statistics',python:'Python',portfolio:'Portfolio'};
+
+const LESSONS=[
+  // SQL
+  {id:'s1',cat:'sql',phase:'Phase 1 — SQL Basics',icon:'🗄️',title:'SQL for Beginners — Setup & First Queries',meta:'Alex The Analyst • YouTube • 45 min • Beginner',url:'https://www.youtube.com/watch?v=HXV3zeQKqGY',isNew:false},
+  {id:'s2',cat:'sql',phase:'Phase 1 — SQL Basics',icon:'🗄️',title:'SELECT, WHERE, ORDER BY, LIMIT',meta:'Alex The Analyst • YouTube • 30 min • Beginner',url:'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=1200',isNew:false},
+  {id:'s3',cat:'sql',phase:'Phase 1 — SQL Basics',icon:'🗄️',title:'GROUP BY, HAVING, COUNT, SUM, AVG',meta:'Alex The Analyst • YouTube • 25 min • Beginner',url:'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=2800',isNew:false},
+  {id:'s4',cat:'sql',phase:'Phase 2 — SQL Intermediate',icon:'🗄️',title:'JOINS — INNER, LEFT, RIGHT, FULL OUTER',meta:'Alex The Analyst • YouTube • 30 min • Intermediate',url:'https://www.youtube.com/watch?v=9URM1_2S0ho',isNew:false},
+  {id:'s5',cat:'sql',phase:'Phase 2 — SQL Intermediate',icon:'🗄️',title:'UNION, CASE WHEN, Aliases',meta:'Alex The Analyst • YouTube • 25 min • Intermediate',url:'https://www.youtube.com/watch?v=m3tspZmEP_k',isNew:false},
+  {id:'s6',cat:'sql',phase:'Phase 2 — SQL Intermediate',icon:'🗄️',title:'String & Date Functions',meta:'freeCodeCamp • YouTube • 30 min • Intermediate',url:'https://www.youtube.com/watch?v=p3qvj9hO_Bo',isNew:false},
+  {id:'s7',cat:'sql',phase:'Phase 3 — SQL Advanced',icon:'🗄️',title:'CTEs — Common Table Expressions',meta:'Alex The Analyst • YouTube • 20 min • Advanced',url:'https://www.youtube.com/watch?v=K1ViAMbVbhs',isNew:false},
+  {id:'s8',cat:'sql',phase:'Phase 3 — SQL Advanced',icon:'🗄️',title:'Window Functions — ROW_NUMBER, RANK, LAG',meta:'Alex The Analyst • YouTube • 25 min • Advanced',url:'https://www.youtube.com/watch?v=yn-oGPXM7YE',isNew:false},
+  {id:'s9',cat:'sql',phase:'Phase 3 — SQL Advanced',icon:'🗄️',title:'SQL Data Cleaning Portfolio Project',meta:'Alex The Analyst • YouTube • 45 min • Project',url:'https://www.youtube.com/watch?v=8rO7ztF4NtU',isNew:false},
+
+  // Excel
+  {id:'e1',cat:'excel',phase:'Phase 1 — Excel Basics',icon:'📊',title:'Excel for Data Analysts — Full Beginner Tutorial',meta:'Alex The Analyst • YouTube • 1 hr • Beginner',url:'https://www.youtube.com/watch?v=PSNXoAs2FtQ',isNew:false},
+  {id:'e2',cat:'excel',phase:'Phase 1 — Excel Basics',icon:'📊',title:'Pivot Tables — Complete Beginner Guide',meta:'Alex The Analyst • YouTube • 30 min • Beginner',url:'https://www.youtube.com/watch?v=m0wI61ahfLc',isNew:false},
+  {id:'e3',cat:'excel',phase:'Phase 2 — Excel Advanced',icon:'📊',title:'XLOOKUP & VLOOKUP — Full Tutorial',meta:'Alex The Analyst • YouTube • 25 min • Intermediate',url:'https://www.youtube.com/watch?v=sj7TVdtWRSo',isNew:false},
+  {id:'e4',cat:'excel',phase:'Phase 2 — Excel Advanced',icon:'📊',title:'Excel Charts & Dashboards for Data Analysis',meta:'Alex The Analyst • YouTube • 35 min • Intermediate',url:'https://www.youtube.com/watch?v=K74_FNnlIF8',isNew:false},
+  {id:'e5',cat:'excel',phase:'Phase 2 — Excel Advanced',icon:'📊',title:'Power Query — Data Cleaning & Transformation',meta:'Excel Campus • YouTube • 40 min • Intermediate',url:'https://www.youtube.com/watch?v=0aeZX1l4JT4',isNew:false},
+
+  // Power BI
+  {id:'p1',cat:'powerbi',phase:'Phase 1 — Power BI Basics',icon:'📈',title:'Power BI Tutorial for Beginners — Full Course',meta:'YouTube • 1 hr • Beginner',url:'https://www.youtube.com/watch?v=AGrl-H87pRU',isNew:false},
+  {id:'p2',cat:'powerbi',phase:'Phase 1 — Power BI Basics',icon:'📈',title:'Connect Data, Build First Report & Visuals',meta:'Guy in a Cube • YouTube • 45 min • Beginner',url:'https://www.youtube.com/watch?v=TmhQCQr_Pcs',isNew:false},
+  {id:'p3',cat:'powerbi',phase:'Phase 2 — Power BI Intermediate',icon:'📈',title:'DAX Basics — Measures, Calculated Columns',meta:'SQLBI • YouTube • 40 min • Intermediate',url:'https://www.youtube.com/watch?v=klnDMFMNdJo',isNew:false},
+  {id:'p4',cat:'powerbi',phase:'Phase 2 — Power BI Intermediate',icon:'📈',title:'Dashboard Design Best Practices',meta:'YouTube • 35 min • Intermediate',url:'https://www.youtube.com/watch?v=0BKlUySopU4',isNew:false},
+  {id:'p5',cat:'powerbi',phase:'Phase 3 — Power BI Project',icon:'📈',title:'Build Full HR Analytics Dashboard (End-to-End)',meta:'YouTube • 1 hr • Project',url:'https://www.youtube.com/watch?v=hhZ62IlTxYs',isNew:false},
+
+  // Tableau — NEW
+  {id:'t1',cat:'tableau',phase:'Phase 1 — Tableau Basics',icon:'🎨',title:'Tableau Full Course for Beginners — Edureka',meta:'Edureka • YouTube • 2 hr • Beginner • 1.5M views',url:'https://www.youtube.com/watch?v=aHaOIvR00So',isNew:true},
+  {id:'t2',cat:'tableau',phase:'Phase 1 — Tableau Basics',icon:'🎨',title:'Connect Data, Build First Dashboard in Tableau',meta:'Penguin Analytics • YouTube • 45 min • Beginner',url:'https://www.youtube.com/watch?v=jEgVto5QME8',isNew:true},
+  {id:'t3',cat:'tableau',phase:'Phase 2 — Tableau Intermediate',icon:'🎨',title:'Tableau Charts — Bar, Line, Pie, Scatter, Maps',meta:'YouTube • 40 min • Intermediate',url:'https://www.youtube.com/watch?v=W8FMnFkVBBk',isNew:true},
+  {id:'t4',cat:'tableau',phase:'Phase 2 — Tableau Intermediate',icon:'🎨',title:'Tableau Calculated Fields & Filters',meta:'Tableau Tim • YouTube • 35 min • Intermediate',url:'https://www.youtube.com/watch?v=JrVf6jdk9I0',isNew:true},
+  {id:'t5',cat:'tableau',phase:'Phase 3 — Tableau Project',icon:'🎨',title:'Build a Sales Performance Dashboard in Tableau',meta:'YouTube • 50 min • Project',url:'https://www.youtube.com/watch?v=a-3VRwgMvvw',isNew:true},
+
+  // BA Skills
+  {id:'b1',cat:'ba',phase:'Phase 1 — BA Fundamentals',icon:'🧩',title:'What is Business Analysis? Complete Introduction',meta:'YouTube • 45 min • Beginner',url:'https://www.youtube.com/watch?v=yuQbDVNEXnI',isNew:false},
+  {id:'b2',cat:'ba',phase:'Phase 1 — BA Fundamentals',icon:'🧩',title:'BABOK Guide — 6 Knowledge Areas Explained',meta:'YouTube • 40 min • Beginner',url:'https://www.youtube.com/watch?v=EvCGSXzjfDQ',isNew:false},
+  {id:'b3',cat:'ba',phase:'Phase 1 — BA Fundamentals',icon:'🧩',title:'Requirements Gathering — Techniques & Best Practices',meta:'YouTube • 35 min • Beginner',url:'https://www.youtube.com/watch?v=FQdQ1VuvE8c',isNew:false},
+  {id:'b4',cat:'ba',phase:'Phase 1 — BA Fundamentals',icon:'🧩',title:'BRD vs FRD — Business & Functional Requirements Doc',meta:'YouTube • 30 min • Beginner',url:'https://www.youtube.com/watch?v=LeVoRW8FBpU',isNew:false},
+  {id:'b5',cat:'ba',phase:'Phase 2 — BA Core Skills',icon:'🧩',title:'Process Mapping & BPMN 2.0 — Full Guide',meta:'YouTube • 45 min • Intermediate',url:'https://www.youtube.com/watch?v=BwkNceoybvA',isNew:false},
+  {id:'b6',cat:'ba',phase:'Phase 2 — BA Core Skills',icon:'🧩',title:'Use Case Diagrams & User Stories',meta:'YouTube • 30 min • Intermediate',url:'https://www.youtube.com/watch?v=zid-MVo7M_E',isNew:false},
+  {id:'b7',cat:'ba',phase:'Phase 2 — BA Core Skills',icon:'🧩',title:'Stakeholder Analysis & Management',meta:'YouTube • 25 min • Intermediate',url:'https://www.youtube.com/watch?v=c_BVRjilM2Q',isNew:false},
+  {id:'b8',cat:'ba',phase:'Phase 2 — BA Core Skills',icon:'🧩',title:'Gap Analysis — AS-IS vs TO-BE Process',meta:'YouTube • 25 min • Intermediate',url:'https://www.youtube.com/watch?v=ESf1qBXgmrw',isNew:false},
+  {id:'b9',cat:'ba',phase:'Phase 3 — Agile BA',icon:'🧩',title:'Agile Methodology for Business Analysts',meta:'YouTube • 40 min • Intermediate',url:'https://www.youtube.com/watch?v=GzzkpAOxHXs',isNew:false},
+  {id:'b10',cat:'ba',phase:'Phase 3 — Agile BA',icon:'🧩',title:'Scrum for BAs — Sprints, Backlog, User Stories',meta:'YouTube • 35 min • Intermediate',url:'https://www.youtube.com/watch?v=9TycLR0TqFA',isNew:false},
+
+  // Jira & Tools — NEW
+  {id:'j1',cat:'jira',phase:'Phase 1 — Jira Basics',icon:'🔧',title:'Jira Tutorial for Beginners — Full 1.5hr Course',meta:'Simon Sez IT • YouTube • 1.5 hr • Beginner',url:'https://www.youtube.com/watch?v=nHuhojfjeUY',isNew:true},
+  {id:'j2',cat:'jira',phase:'Phase 1 — Jira Basics',icon:'🔧',title:'Jira Scrum Board & Kanban Board Setup',meta:'Atlassian • YouTube • 30 min • Beginner',url:'https://www.youtube.com/watch?v=R1hVAFHMHoI',isNew:true},
+  {id:'j3',cat:'jira',phase:'Phase 2 — Confluence',icon:'🔧',title:'Confluence Tutorial — Complete Beginners Course (4.5hr)',meta:'YouTube • 1 hr highlights • Intermediate',url:'https://www.youtube.com/watch?v=phHc9RWDgKY',isNew:true},
+  {id:'j4',cat:'jira',phase:'Phase 2 — Confluence',icon:'🔧',title:'Jira + Confluence Integration for BAs',meta:'Atlassian University • Free • 45 min',url:'https://university.atlassian.com',isNew:true},
+  {id:'j5',cat:'jira',phase:'Phase 3 — draw.io for Process Maps',icon:'🔧',title:'draw.io / diagrams.net — Free Process Mapping Tool',meta:'YouTube • 30 min • Beginner • Free tool',url:'https://www.youtube.com/watch?v=Z0D96ZikMkc',isNew:true},
+
+  // Wireframing — NEW
+  {id:'w1',cat:'wireframe',phase:'Phase 1 — Wireframing Basics',icon:'✏️',title:'What is Wireframing? BA Guide to Mockups',meta:'YouTube • 20 min • Beginner',url:'https://www.youtube.com/watch?v=qpH7-KFWZRI',isNew:true},
+  {id:'w2',cat:'wireframe',phase:'Phase 1 — Wireframing Basics',icon:'✏️',title:'Balsamiq for Beginners — Free Wireframing Tool',meta:'Balsamiq Academy • Free course • 1 hr',url:'https://balsamiq.com/learn/learning-tracks/rapid-wireframing/',isNew:true},
+  {id:'w3',cat:'wireframe',phase:'Phase 2 — Wireframing Practice',icon:'✏️',title:'Create Low-Fidelity Wireframes for a Web App',meta:'YouTube • 35 min • Intermediate',url:'https://www.youtube.com/watch?v=TTNGNv-GfpQ',isNew:true},
+  {id:'w4',cat:'wireframe',phase:'Phase 2 — Wireframing Practice',icon:'✏️',title:'Figma for Business Analysts — Basics',meta:'YouTube • 40 min • Intermediate • Free tool',url:'https://www.youtube.com/watch?v=FTFaQWZBqQ8',isNew:true},
+
+  // Statistics — NEW
+  {id:'st1',cat:'stats',phase:'Phase 1 — Stats for DA',icon:'📐',title:'Statistics for Data Science — Full Beginner Course',meta:'StatQuest • YouTube • 1 hr • Beginner',url:'https://www.youtube.com/watch?v=qBigTkBLU6g',isNew:true},
+  {id:'st2',cat:'stats',phase:'Phase 1 — Stats for DA',icon:'📐',title:'Mean, Median, Mode, Standard Deviation Explained',meta:'YouTube • 25 min • Beginner',url:'https://www.youtube.com/watch?v=mk8tOD0t8M0',isNew:true},
+  {id:'st3',cat:'stats',phase:'Phase 2 — Applied Stats',icon:'📐',title:'Probability Basics for Data Analysts',meta:'YouTube • 30 min • Intermediate',url:'https://www.youtube.com/watch?v=uzkc-qNVoOk',isNew:true},
+  {id:'st4',cat:'stats',phase:'Phase 2 — Applied Stats',icon:'📐',title:'Correlation vs Causation — Critical Thinking for BA',meta:'YouTube • 20 min • Intermediate',url:'https://www.youtube.com/watch?v=GtV-VYdNt_g',isNew:true},
+
+  // Python
+  {id:'py1',cat:'python',phase:'Phase 1 — Python Basics',icon:'🐍',title:'Python for Beginners — Full Course',meta:'Alex The Analyst • YouTube • 1.5 hr • Beginner',url:'https://www.youtube.com/watch?v=N4mEzFDjqtA',isNew:false},
+  {id:'py2',cat:'python',phase:'Phase 2 — Python for Data',icon:'🐍',title:'Pandas for Data Analysis — Complete Tutorial',meta:'Alex The Analyst • YouTube • 1 hr • Intermediate',url:'https://www.youtube.com/watch?v=vmEHCJofslg',isNew:false},
+  {id:'py3',cat:'python',phase:'Phase 2 — Python for Data',icon:'🐍',title:'Python Data Visualization — Matplotlib & Seaborn',meta:'YouTube • 45 min • Intermediate',url:'https://www.youtube.com/watch?v=a9UrKTVEeZA',isNew:false},
+
+  // Portfolio & Career
+  {id:'pf1',cat:'portfolio',phase:'Phase 1 — Portfolio Setup',icon:'💼',title:'How to Build a Data Analyst Portfolio (Step by Step)',meta:'Alex The Analyst • YouTube • 20 min • Career',url:'https://www.youtube.com/watch?v=ocdwh0KYeUs',isNew:false},
+  {id:'pf2',cat:'portfolio',phase:'Phase 1 — Portfolio Setup',icon:'💼',title:'GitHub Portfolio for Analysts — Setup Guide',meta:'YouTube • 25 min • Career',url:'https://www.youtube.com/watch?v=G6D6TpLvvkw',isNew:false},
+  {id:'pf3',cat:'portfolio',phase:'Phase 2 — Projects',icon:'💼',title:'End-to-End SQL Project — COVID Data Exploration',meta:'Alex The Analyst • YouTube • 1 hr • Project',url:'https://www.youtube.com/watch?v=qfyynHBFOsM',isNew:false},
+  {id:'pf4',cat:'portfolio',phase:'Phase 2 — Projects',icon:'💼',title:'End-to-End Excel + Power BI HR Dashboard Project',meta:'YouTube • 1 hr • Project',url:'https://www.youtube.com/watch?v=hhZ62IlTxYs',isNew:false},
+  {id:'pf5',cat:'portfolio',phase:'Phase 2 — Projects',icon:'💼',title:'End-to-End Tableau Sales Dashboard Project',meta:'YouTube • 50 min • Project',url:'https://www.youtube.com/watch?v=a-3VRwgMvvw',isNew:false},
+  {id:'pf6',cat:'portfolio',phase:'Phase 3 — Job Ready',icon:'💼',title:'Data Analyst Resume & LinkedIn Optimization',meta:'Alex The Analyst • YouTube • 25 min • Career',url:'https://www.youtube.com/watch?v=CXlPFvUvnMk',isNew:false},
+  {id:'pf7',cat:'portfolio',phase:'Phase 3 — Job Ready',icon:'💼',title:'Top BA Interview Questions + How to Answer (India)',meta:'YouTube • 40 min • Career',url:'https://www.youtube.com/watch?v=Kx6qXaQimcw',isNew:false},
+  {id:'pf8',cat:'portfolio',phase:'Phase 3 — Job Ready',icon:'💼',title:'Top DA Interview Questions + SQL Mock Interview',meta:'Alex The Analyst • YouTube • 30 min • Career',url:'https://www.youtube.com/watch?v=LFontSS5rHs',isNew:false},
+  {id:'pf9',cat:'portfolio',phase:'Phase 4 — Certification',icon:'💼',title:'ECBA Certification Guide — Free Prep (IIBA)',meta:'YouTube • 35 min • Certification',url:'https://www.youtube.com/watch?v=KCEhaGiuMarket',isNew:true},
+  {id:'pf10',cat:'portfolio',phase:'Phase 4 — Certification',icon:'💼',title:'Coursera Financial Aid Tutorial — Get Certificates Free',meta:'YouTube • 10 min • Career Tip',url:'https://www.youtube.com/watch?v=V3ZaKKhCDWs',isNew:true},
+];
+
+let done=JSON.parse(localStorage.getItem('rdmp_done_v2')||'{}');
+let lastStudy=localStorage.getItem('rdmp_last')||'';
+let streak=parseInt(localStorage.getItem('rdmp_streak')||'0');
+let currentTab='all';
+let chatHistory=[];
+
+function persist(){localStorage.setItem('rdmp_done_v2',JSON.stringify(done));}
+
+function checkStreak(){
+  const today=new Date().toISOString().split('T')[0];
+  if(lastStudy===today)return;
+  const yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
+  streak=lastStudy===yesterday?streak+1:1;
+  lastStudy=today;
+  localStorage.setItem('rdmp_last',today);
+  localStorage.setItem('rdmp_streak',streak);
+}
+
+function updateOverall(){
+  const total=LESSONS.length,completed=Object.values(done).filter(Boolean).length;
+  const pct=total?Math.round(completed/total*100):0;
+  document.getElementById('overallPct').textContent=pct+'%';
+  document.getElementById('overallBar').style.width=pct+'%';
+  document.getElementById('doneCount').textContent=completed+' of '+total+' lessons done';
+  document.getElementById('streakTxt').textContent='🔥 '+streak+' day streak';
+  document.getElementById('st1').textContent=completed;
+  document.getElementById('st2').textContent=pct+'%';
+  document.getElementById('st3').textContent=streak;
+  const mins=LESSONS.filter(l=>done[l.id]).reduce((a,l)=>{
+    const m=parseInt((l.meta.match(/(\d+(?:\.\d+)?)\s*(hr|min)/)||['','30','min'])[1]);
+    const u=(l.meta.match(/hr|min/)||['min'])[0];
+    return a+(u==='hr'?m*60:m);
+  },0);
+  document.getElementById('st4').textContent=Math.round(mins/60*10)/10+'h';
+}
+
+function renderCatProgress(){
+  const el=document.getElementById('catProgressList');
+  if(!el)return;
+  el.innerHTML='';
+  Object.keys(CAT_NAMES).forEach(cat=>{
+    const catL=LESSONS.filter(l=>l.cat===cat);
+    const catD=catL.filter(l=>done[l.id]).length;
+    const pct=catL.length?Math.round(catD/catL.length*100):0;
+    const d=document.createElement('div');
+    d.className='cat-prog';
+    d.innerHTML=`<div class="cp-row"><span class="cp-name" style="color:${CAT_COLORS[cat]}">${CAT_NAMES[cat]}</span><div class="cp-bar-wrap"><div class="cp-bar" style="width:${pct}%;background:${CAT_COLORS[cat]}"></div></div><span class="cp-pct">${catD}/${catL.length}</span></div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderLessons(filter){
+  const list=document.getElementById('lessonsList');
+  list.innerHTML='';
+  const filtered=filter==='all'?LESSONS:LESSONS.filter(l=>l.cat===filter);
+  let curPhase='';
+  filtered.forEach(l=>{
+    if(l.phase!==curPhase){
+      curPhase=l.phase;
+      const ph=document.createElement('div');
+      ph.className='phase-label';
+      ph.textContent=l.phase;
+      list.appendChild(ph);
+    }
+    const isDone=!!done[l.id];
+    const card=document.createElement('div');
+    card.className=`lesson ${l.cat}${isDone?' done':''}`;
+    card.innerHTML=`
+      <div class="lesson-top">
+        <div class="lesson-icon">${l.icon}</div>
+        <div class="lesson-body">
+          <div class="lesson-title">${l.title}</div>
+          <div class="lesson-meta">${l.meta}</div>
+          <div class="lesson-actions">
+            <a class="btn-watch" href="${l.url}" target="_blank">▶ Watch / Open</a>
+            <button class="btn-done${isDone?' completed':''}" onclick="toggleDone('${l.id}')">${isDone?'✓ Done':'Mark done'}</button>
+            <span class="cat-badge" style="color:${CAT_COLORS[l.cat]}">${CAT_NAMES[l.cat]}</span>
+            ${l.isNew?'<span class="new-badge">✨ New</span>':''}
+          </div>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function toggleDone(id){
+  done[id]=!done[id];
+  if(done[id])checkStreak();
+  persist();
+  renderLessons(currentTab);
+  updateOverall();
+  renderCatProgress();
+}
+
+function setTab(t){
+  currentTab=t;
+  const tabs=['all','sql','excel','powerbi','tableau','ba','jira','wireframe','stats','python','portfolio','ai','mystats'];
+  document.querySelectorAll('.nav button').forEach((b,i)=>{b.classList.toggle('active',tabs[i]===t);});
+  const isLesson=!['ai','mystats'].includes(t);
+  document.getElementById('lessonsView').style.display=isLesson?'':'none';
+  document.getElementById('aiView').style.display=t==='ai'?'':'none';
+  document.getElementById('mystatsView').style.display=t==='mystats'?'':'none';
+  if(isLesson)renderLessons(t);
+  if(t==='mystats'){updateOverall();renderCatProgress();}
+}
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  appendMsg(msg,'user');
+  chatHistory.push({role:'user',content:msg});
+  const loadEl=appendMsg('Thinking...','ai loading');
+  try{
+    const completed=Object.values(done).filter(Boolean).length;
+    const sys=`You are a friendly, expert BA (Business Analyst) and DA (Data Analyst) study tutor for Mohanbabu — an Indian professional based in Chennai with 7+ years in Benefits & Payroll Operations (Team Lead at RRD). He is switching careers to BA/DA. He has completed ${completed}/${LESSONS.length} lessons in his study tracker covering SQL, Excel, Power BI, Tableau, BA skills, Jira, Wireframing, Statistics, Python, and Portfolio building. Keep responses concise, warm, practical, and encouraging. Use simple language. Relate concepts to his payroll/HR/operations background where helpful. Format clearly with line breaks.`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatHistory})
+    });
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'Sorry, could not get a response. Please try again.';
+    loadEl.remove();
+    appendMsg(reply,'ai');
+    chatHistory.push({role:'assistant',content:reply});
+    if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+  }catch(e){
+    loadEl.remove();
+    appendMsg('Connection error. Check your internet and try again.','ai');
+  }
+}
+
+function appendMsg(text,cls){
+  const log=document.getElementById('chatLog');
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  div.textContent=text;
+  log.appendChild(div);
+  log.scrollTop=log.scrollHeight;
+  return div;
+}
+
+function askQ(q){document.getElementById('chatInput').value=q;sendMsg();}
+
+checkStreak();
+renderLessons('all');
+updateOverall();
+</script>
+</body>
+</html>
