@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohanbabu's AI Learning Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e8f0;
+    --muted: #7a7a9a;
+    --dim: #4a4a6a;
+
+    --teal: #00d4a0;
+    --teal-dim: rgba(0,212,160,0.12);
+    --teal-border: rgba(0,212,160,0.25);
+
+    --blue: #4d9fff;
+    --blue-dim: rgba(77,159,255,0.12);
+    --blue-border: rgba(77,159,255,0.25);
+
+    --purple: #9b7fff;
+    --purple-dim: rgba(155,127,255,0.12);
+    --purple-border: rgba(155,127,255,0.25);
+
+    --amber: #ffb347;
+    --amber-dim: rgba(255,179,71,0.12);
+    --amber-border: rgba(255,179,71,0.25);
+
+    --coral: #ff6b6b;
+    --coral-dim: rgba(255,107,107,0.12);
+    --coral-border: rgba(255,107,107,0.25);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,212,160,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(77,159,255,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 50% 50%, rgba(155,127,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    background: var(--teal-dim);
+    border: 1px solid var(--teal-border);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .header-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .meta-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  /* PHASE CARDS */
+  .phases { display: flex; flex-direction: column; gap: 20px; }
+
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .phase:hover { border-color: var(--border2); }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.1s; }
+  .phase:nth-child(2) { animation-delay: 0.2s; }
+  .phase:nth-child(3) { animation-delay: 0.3s; }
+  .phase:nth-child(4) { animation-delay: 0.4s; }
+  .phase:nth-child(5) { animation-delay: 0.5s; }
+
+  .phase-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .phase-number {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .phase-info { flex: 1; }
+
+  .phase-label {
+    font-size: 11px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .phase-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .phase-timeline {
+    font-size: 11px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    margin-top: 4px;
+    align-self: flex-start;
+  }
+
+  /* Resources */
+  .resources { padding: 16px 24px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  .resource {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .resource:hover {
+    border-color: var(--border2);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .res-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .res-content { flex: 1; min-width: 0; }
+
+  .res-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 3px;
+  }
+
+  .res-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .free-badge {
+    font-size: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(0,212,160,0.15);
+    color: var(--teal);
+    border: 1px solid rgba(0,212,160,0.2);
+  }
+
+  .res-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .res-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--blue);
+    text-decoration: none;
+    font-family: 'DM Sans', monospace;
+    transition: color 0.2s;
+  }
+
+  .res-link:hover { color: #fff; }
+
+  .res-link::after {
+    content: '↗';
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  /* Color themes per phase */
+  .phase-teal .phase-number { background: var(--teal-dim); color: var(--teal); }
+  .phase-teal .phase-label { color: var(--teal); }
+  .phase-teal .phase-timeline { background: var(--teal-dim); color: var(--teal); }
+  .phase-teal .res-icon { background: var(--teal-dim); }
+
+  .phase-blue .phase-number { background: var(--blue-dim); color: var(--blue); }
+  .phase-blue .phase-label { color: var(--blue); }
+  .phase-blue .phase-timeline { background: var(--blue-dim); color: var(--blue); }
+  .phase-blue .res-icon { background: var(--blue-dim); }
+
+  .phase-purple .phase-number { background: var(--purple-dim); color: var(--purple); }
+  .phase-purple .phase-label { color: var(--purple); }
+  .phase-purple .phase-timeline { background: var(--purple-dim); color: var(--purple); }
+  .phase-purple .res-icon { background: var(--purple-dim); }
+
+  .phase-amber .phase-number { background: var(--amber-dim); color: var(--amber); }
+  .phase-amber .phase-label { color: var(--amber); }
+  .phase-amber .phase-timeline { background: var(--amber-dim); color: var(--amber); }
+  .phase-amber .res-icon { background: var(--amber-dim); }
+
+  .phase-coral .phase-number { background: var(--coral-dim); color: var(--coral); }
+  .phase-coral .phase-label { color: var(--coral); }
+  .phase-coral .phase-timeline { background: var(--coral-dim); color: var(--coral); }
+  .phase-coral .res-icon { background: var(--coral-dim); }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .progress-step {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: default;
+  }
+
+  .progress-step-label {
+    font-size: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+
+  .progress-step-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .progress-step-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border2);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-step-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 1s ease;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 60px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-note {
+    font-size: 12px;
+    color: var(--dim);
+  }
+
+  .footer-note strong {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .phase-header { flex-direction: column; gap: 12px; }
+    .phase-timeline { align-self: auto; }
+    .resource { flex-direction: column; gap: 10px; }
+    .res-icon { width: 28px; height: 28px; font-size: 14px; }
+    header { padding: 40px 0 32px; }
+    .progress-bar { gap: 4px; }
+    .progress-step { min-width: 60px; padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="header-tag">AI Learning Roadmap</div>
+    <h1>From corporate pro<br>to <span>AI builder</span></h1>
+    <p style="color:var(--muted);font-size:15px;max-width:520px;margin-top:8px;">A personalized path for someone with 7 years of operations experience — no coding required. Built around n8n, Make, and no-code AI tools.</p>
+    <div class="header-meta">
+      <div class="meta-item"><div class="meta-dot"></div>All free resources</div>
+      <div class="meta-item"><div class="meta-dot" style="background:var(--blue);"></div>16 weeks total</div>
+      <div class="meta-item"><div class="meta-dot" style="background:var(--purple);"></div>Zero coding needed</div>
+      <div class="meta-item"><div class="meta-dot" style="background:var(--amber);"></div>Job + freelance ready</div>
+    </div>
+  </header>
+
+  <!-- Progress overview -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step">
+      <div class="progress-step-label">Phase 1</div>
+      <div class="progress-step-name">n8n basics</div>
+      <div class="progress-step-bar"><div class="progress-step-fill" style="background:var(--teal);" data-width="100"></div></div>
+    </div>
+    <div class="progress-step">
+      <div class="progress-step-label">Phase 2</div>
+      <div class="progress-step-name">Make.com</div>
+      <div class="progress-step-bar"><div class="progress-step-fill" style="background:var(--blue);" data-width="100"></div></div>
+    </div>
+    <div class="progress-step">
+      <div class="progress-step-label">Phase 3</div>
+      <div class="progress-step-name">AI + LLMs</div>
+      <div class="progress-step-bar"><div class="progress-step-fill" style="background:var(--purple);" data-width="100"></div></div>
+    </div>
+    <div class="progress-step">
+      <div class="progress-step-label">Phase 4</div>
+      <div class="progress-step-name">Portfolio</div>
+      <div class="progress-step-bar"><div class="progress-step-fill" style="background:var(--amber);" data-width="100"></div></div>
+    </div>
+    <div class="progress-step">
+      <div class="progress-step-label">Bonus</div>
+      <div class="progress-step-name">Daily habit</div>
+      <div class="progress-step-bar"><div class="progress-step-fill" style="background:var(--coral);" data-width="100"></div></div>
+    </div>
+  </div>
+
+  <div class="phases">
+
+    <!-- PHASE 1 -->
+    <div class="phase phase-teal">
+      <div class="phase-header">
+        <div class="phase-number">01</div>
+        <div class="phase-info">
+          <div class="phase-label">Phase 1 · Weeks 1–3</div>
+          <div class="phase-title">Learn n8n — your core tool</div>
+          <div class="phase-sub">No-code AI automation · Build your first live workflow in week 1</div>
+        </div>
+        <div class="phase-timeline">Start here</div>
+      </div>
+      <div class="resources">
+
+        <div class="resource">
+          <div class="res-icon">📄</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">n8n official quickstart</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Build your first workflow in 30 mins — official step-by-step beginner tutorial</div>
+            <a class="res-link" href="https://docs.n8n.io/try-it-out/" target="_blank">docs.n8n.io/try-it-out</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">☁️</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">n8n cloud free account</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">No server setup — sign up and start building instantly in the browser</div>
+            <a class="res-link" href="https://app.n8n.cloud/register" target="_blank">app.n8n.cloud/register</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">▶️</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Liam Ottley — n8n + AI agents YouTube</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Best YouTube channel for beginners learning n8n and no-code AI agents</div>
+            <a class="res-link" href="https://www.youtube.com/@LiamOttley" target="_blank">youtube.com/@LiamOttley</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">💬</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">n8n community forum</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Active community — ask questions, find workflow templates, get unstuck fast</div>
+            <a class="res-link" href="https://community.n8n.io" target="_blank">community.n8n.io</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase phase-blue">
+      <div class="phase-header">
+        <div class="phase-number">02</div>
+        <div class="phase-info">
+          <div class="phase-label">Phase 2 · Weeks 4–6</div>
+          <div class="phase-title">Learn Make.com for client work</div>
+          <div class="phase-sub">Most used by businesses · Easier visual builder · Free tier available</div>
+        </div>
+        <div class="phase-timeline">Weeks 4–6</div>
+      </div>
+      <div class="resources">
+
+        <div class="resource">
+          <div class="res-icon">🎓</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Make Academy — full structured course</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Official course from zero to building automations — best place to start with Make</div>
+            <a class="res-link" href="https://academy.make.com" target="_blank">academy.make.com</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">☁️</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Make free account</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">1,000 operations/month free — more than enough to build and test your automations</div>
+            <a class="res-link" href="https://www.make.com/en/register" target="_blank">make.com/en/register</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">▶️</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Mike Devlin — Make.com YouTube tutorials</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Practical Make tutorials focused on real business use cases — easy to follow</div>
+            <a class="res-link" href="https://www.youtube.com/@mikedevlin" target="_blank">youtube.com/@mikedevlin</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase phase-purple">
+      <div class="phase-header">
+        <div class="phase-number">03</div>
+        <div class="phase-info">
+          <div class="phase-label">Phase 3 · Weeks 7–10</div>
+          <div class="phase-title">Connect AI models to your workflows</div>
+          <div class="phase-sub">ChatGPT / Claude APIs · No-code AI agents · Build smart automations</div>
+        </div>
+        <div class="phase-timeline">Weeks 7–10</div>
+      </div>
+      <div class="resources">
+
+        <div class="resource">
+          <div class="res-icon">🤖</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">DeepLearning.AI short courses</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">1–2 hour courses on ChatGPT API, LangChain, prompt engineering. Start with "ChatGPT Prompt Engineering for Developers"</div>
+            <a class="res-link" href="https://www.deeplearning.ai/short-courses/" target="_blank">deeplearning.ai/short-courses</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">⚡</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Relevance AI — no-code agent builder</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Build powerful AI agents with a visual interface — zero Python required at all</div>
+            <a class="res-link" href="https://relevanceai.com" target="_blank">relevanceai.com</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">🔍</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Google Prompting Essentials</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Structured prompting course — directly useful when building AI workflows with n8n and Make</div>
+            <a class="res-link" href="https://grow.google/ai-prompting-essentials" target="_blank">grow.google/ai-prompting-essentials</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase phase-amber">
+      <div class="phase-header">
+        <div class="phase-number">04</div>
+        <div class="phase-info">
+          <div class="phase-label">Phase 4 · Weeks 11–16</div>
+          <div class="phase-title">Build 3 projects + get certified</div>
+          <div class="phase-sub">Free certifications · Real portfolio · LinkedIn positioning for jobs</div>
+        </div>
+        <div class="phase-timeline">Weeks 11–16</div>
+      </div>
+      <div class="resources">
+
+        <div class="resource">
+          <div class="res-icon">🏅</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Microsoft AI-900 certification</span>
+              <span class="free-badge">Free to study</span>
+            </div>
+            <div class="res-desc">Azure AI Fundamentals — globally recognized cert, free study material on Microsoft Learn</div>
+            <a class="res-link" href="https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/" target="_blank">learn.microsoft.com — AI-900</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">🎓</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Google AI Essentials certificate</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Beginner-friendly, adds instant credibility on LinkedIn and resume</div>
+            <a class="res-link" href="https://grow.google/certificates/ai-essentials/" target="_blank">grow.google/certificates/ai-essentials</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">💼</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Upwork — start freelancing</span>
+              <span class="free-badge">Free to join</span>
+            </div>
+            <div class="res-desc">Create profile and offer n8n/Make automation services — demand is very high right now</div>
+            <a class="res-link" href="https://www.upwork.com/signup/" target="_blank">upwork.com/signup</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">🤗</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Hugging Face — AI courses</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">When ready to go deeper — AI agents course, NLP, and open-source models</div>
+            <a class="res-link" href="https://huggingface.co/learn" target="_blank">huggingface.co/learn</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BONUS -->
+    <div class="phase phase-coral">
+      <div class="phase-header">
+        <div class="phase-number">★</div>
+        <div class="phase-info">
+          <div class="phase-label">Bonus · Start from day 1</div>
+          <div class="phase-title">Daily habits that compound fast</div>
+          <div class="phase-sub">Use these every day — builds network, keeps you current, forms your portfolio</div>
+        </div>
+        <div class="phase-timeline">Every day</div>
+      </div>
+      <div class="resources">
+
+        <div class="resource">
+          <div class="res-icon">🔧</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">There's An AI For That — tool discovery</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Find the best AI tool for any task — updated daily with new tools</div>
+            <a class="res-link" href="https://theresanaiforthat.com" target="_blank">theresanaiforthat.com</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">📧</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">Ben's Bites — daily AI newsletter</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Best 5-minute daily AI news digest — keeps you sharp and current on what's happening</div>
+            <a class="res-link" href="https://bensbites.com" target="_blank">bensbites.com</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">💡</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">LinkedIn — post every build</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Post every automation you build, even small ones. This becomes your public portfolio for jobs and clients</div>
+            <a class="res-link" href="https://www.linkedin.com" target="_blank">linkedin.com</a>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="res-icon">👥</div>
+          <div class="res-content">
+            <div class="res-top">
+              <span class="res-name">r/n8n and r/AIAutomation — Reddit</span>
+              <span class="free-badge">Free</span>
+            </div>
+            <div class="res-desc">Active communities — see real projects, get help, find freelance leads and inspiration</div>
+            <a class="res-link" href="https://reddit.com/r/n8n" target="_blank">reddit.com/r/n8n</a>
+            &nbsp;&nbsp;
+            <a class="res-link" href="https://reddit.com/r/AIAutomation" target="_blank">reddit.com/r/AIAutomation</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /phases -->
+
+  <!-- Project ideas -->
+  <div style="margin-top:40px;padding:28px 28px 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;">
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;">Your first 3 portfolio projects</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+      <div style="padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-weight:500;color:#fff;font-size:14px;margin-bottom:6px;">HR email triage bot</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Reads payroll/benefits queries, drafts AI replies, routes to right person — buildable in n8n week 2</div>
+      </div>
+      <div style="padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-weight:500;color:#fff;font-size:14px;margin-bottom:6px;">Policy doc summarizer</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Upload a PDF policy — AI answers questions from it. Perfect demo for your benefits domain expertise</div>
+      </div>
+      <div style="padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-weight:500;color:#fff;font-size:14px;margin-bottom:6px;">Weekly report generator</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Pulls data from a spreadsheet, AI generates a formatted summary report, emails it automatically every Monday</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-note">Built for <strong>Mohanbabu</strong> · 7 years ops experience + AI upskilling path</div>
+    <div class="footer-note">All resources are free · Updated March 2025</div>
+  </footer>
+
+</div>
+
+<script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.querySelectorAll('.progress-step-fill').forEach(function(el) {
+        el.style.width = el.getAttribute('data-width') + '%';
+      });
+    }, 400);
+  });
+</script>
+
+</body>
+</html>
