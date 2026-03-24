@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuvarani's Wellness Roadmap 🌿</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sage: #5a8c5e;
+  --sage-light: #c4dbc7;
+  --cream: #fdf9f3;
+  --warm: #f5ede0;
+  --accent: #e07a5f;
+  --gold: #c9a84c;
+  --blue: #4a90d9;
+  --lavender: #9b8ec4;
+  --text: #2a3a2b;
+  --muted: #6b856d;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); }
+
+.hero {
+  background: linear-gradient(155deg,#1a2e1b 0%,#2d5230 50%,#5a8c5e 100%);
+  padding: 60px 20px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute;inset:0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(201,168,76,.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 10% 80%, rgba(155,142,196,.15) 0%, transparent 50%);
+  pointer-events:none;
+}
+.hero-badge {
+  display:inline-block;
+  border:1px solid rgba(201,168,76,.5);
+  color:#e8d08a;
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  padding:6px 20px; border-radius:20px;
+  margin-bottom:20px; position:relative;
+  animation:fadeDown .8s ease both;
+}
+.hero h1 {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.2rem,6vw,4rem);
+  color:#fff; line-height:1.1;
+  position:relative;
+  animation:fadeDown .9s .1s ease both;
+}
+.hero h1 span { color:#e8d08a; font-style:italic; }
+.hero-sub {
+  margin-top:12px; color:rgba(255,255,255,.7);
+  font-size:.95rem; font-weight:300;
+  position:relative;
+  animation:fadeDown 1s .2s ease both;
+}
+.hero-pills {
+  display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+  margin-top:26px; position:relative;
+  animation:fadeDown 1s .35s ease both;
+}
+.hero-pill {
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff; font-size:12px;
+  padding:6px 16px; border-radius:30px;
+}
+
+.water-bar {
+  background: linear-gradient(135deg,#1565c0,#1e88e5);
+  padding:36px 20px; text-align:center;
+}
+.water-bar h2 { font-family:'Playfair Display',serif; color:#fff; font-size:1.5rem; margin-bottom:4px; }
+.water-bar p { color:rgba(255,255,255,.75); font-size:.85rem; margin-bottom:22px; }
+.glasses-row {
+  display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
+  max-width:480px; margin:0 auto 16px;
+}
+.glass {
+  width:44px; height:54px;
+  background:rgba(255,255,255,.12);
+  border:2px solid rgba(255,255,255,.3);
+  border-radius:4px 4px 9px 9px;
+  cursor:pointer; overflow:hidden;
+  display:flex; align-items:flex-end;
+  transition:transform .2s;
+  position:relative;
+}
+.glass:hover { transform:scale(1.12); }
+.glass-fill {
+  width:100%; height:0%;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(180,220,255,.9));
+  transition:height .5s cubic-bezier(.34,1.56,.64,1);
+  border-radius:0 0 7px 7px;
+}
+.glass.filled .glass-fill { height:100%; }
+.water-count { color:#fff; font-size:1rem; margin-top:10px; font-weight:500; }
+.water-tip {
+  background:rgba(255,255,255,.12); border-radius:12px;
+  padding:12px 20px; display:inline-block;
+  color:rgba(255,255,255,.85); font-size:.82rem;
+  margin-top:14px; max-width:500px;
+}
+
+.tab-nav {
+  display:flex; overflow-x:auto; gap:0;
+  background:#fff;
+  border-bottom:2px solid var(--sage-light);
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  scrollbar-width:none;
+}
+.tab-nav::-webkit-scrollbar { display:none; }
+.tab-btn {
+  flex:1; padding:14px 10px;
+  background:none; border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:.82rem; font-weight:500;
+  color:var(--muted); cursor:pointer;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+  transition:all .2s; white-space:nowrap;
+}
+.tab-btn:hover { color:var(--sage); }
+.tab-btn.active { color:var(--sage); border-bottom-color:var(--sage); font-weight:600; }
+.tab-btn .veg-dot {
+  display:inline-block; width:7px; height:7px;
+  background:#4caf50; border-radius:50%;
+  margin-left:5px; vertical-align:middle;
+}
+
+.day-panel { display:none; padding:28px 16px 48px; max-width:720px; margin:0 auto; }
+.day-panel.active { display:block; animation:fadeUp .45s ease; }
+
+.day-header {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:24px; flex-wrap:wrap;
+}
+.day-number {
+  width:56px; height:56px;
+  background:linear-gradient(135deg,var(--sage),var(--sage-light));
+  border-radius:14px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  color:#fff; flex-shrink:0;
+}
+.day-number .num { font-size:1.4rem; font-weight:700; line-height:1; }
+.day-number .lbl { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; opacity:.85; }
+.day-title { font-family:'Playfair Display',serif; font-size:1.4rem; flex:1; }
+.day-title small { display:block; font-family:'DM Sans',sans-serif; font-size:.78rem; color:var(--muted); font-weight:400; margin-top:2px; }
+.veg-badge {
+  background:#e8f5e9; border:1px solid #a5d6a7; color:#388e3c;
+  font-size:11px; padding:5px 12px; border-radius:20px;
+  font-weight:600; white-space:nowrap;
+}
+
+.meals-grid { display:grid; gap:14px; margin-bottom:20px; }
+.meal-card {
+  background:#fff; border-radius:16px;
+  padding:18px 20px;
+  border-left:4px solid var(--sage);
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
+  transition:transform .2s, box-shadow .2s;
+}
+.meal-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.09); }
+.meal-card.breakfast { border-left-color: #f59e0b; }
+.meal-card.lunch     { border-left-color: var(--sage); }
+.meal-card.snack     { border-left-color: var(--lavender); }
+.meal-card.dinner    { border-left-color: var(--accent); }
+
+.meal-time { font-size:10px; letter-spacing:2px; text-transform:uppercase; font-weight:600; margin-bottom:8px; }
+.meal-card.breakfast .meal-time { color:#d97706; }
+.meal-card.lunch     .meal-time { color:var(--sage); }
+.meal-card.snack     .meal-time { color:var(--lavender); }
+.meal-card.dinner    .meal-time { color:var(--accent); }
+
+.meal-icon { font-size:1.5rem; margin-bottom:6px; }
+.meal-name { font-weight:600; font-size:1rem; margin-bottom:6px; }
+.meal-desc { font-size:.83rem; color:#4a5a4b; line-height:1.6; }
+.meal-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.meal-tag { background:var(--warm); color:var(--muted); font-size:10px; padding:3px 10px; border-radius:12px; }
+.meal-tag.good { background:#e8f5e9; color:#388e3c; }
+.meal-tag.avoid { background:#fce4ec; color:#c62828; }
+
+.avoid-card {
+  background:#fff8f6; border:1px solid #f5c6bb;
+  border-radius:14px; padding:16px 18px; margin-top:4px;
+}
+.avoid-card h4 { color:var(--accent); font-size:.9rem; margin-bottom:10px; }
+.avoid-list { display:flex; flex-wrap:wrap; gap:8px; }
+.avoid-item { background:#fce4ec; color:#b71c1c; font-size:11px; padding:4px 12px; border-radius:20px; }
+
+.tips-card {
+  background:linear-gradient(135deg,#f0f7f1,#e8f4ea);
+  border-radius:14px; padding:18px 20px;
+  border:1px solid var(--sage-light); margin-top:14px;
+}
+.tips-card h4 { color:var(--sage); font-size:.9rem; margin-bottom:12px; font-weight:600; }
+.tips-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.tips-list li { display:flex; align-items:flex-start; gap:10px; font-size:.83rem; color:var(--text); line-height:1.5; }
+.tips-list li::before { content:'✦'; color:var(--sage); flex-shrink:0; margin-top:1px; font-size:10px; }
+
+.reminder-section {
+  background:linear-gradient(135deg,#1a2e1b,#2d5230);
+  padding:40px 20px; text-align:center;
+}
+.reminder-section h2 { font-family:'Playfair Display',serif; color:#fff; font-size:1.6rem; margin-bottom:6px; }
+.reminder-section p { color:rgba(255,255,255,.7); font-size:.87rem; margin-bottom:28px; }
+.reminder-cards {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px; max-width:680px; margin:0 auto;
+}
+.rem-card {
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  border-radius:14px; padding:18px 14px; color:#fff;
+}
+.rem-icon { font-size:1.8rem; margin-bottom:8px; }
+.rem-time { font-size:.75rem; color:#e8d08a; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.rem-text { font-size:.82rem; color:rgba(255,255,255,.8); line-height:1.5; }
+
+.footer { background:#fff; padding:30px 20px; text-align:center; border-top:1px solid #e8f0e9; }
+.footer .heart { color:var(--accent); font-size:1.3rem; display:block; margin-bottom:8px; }
+.footer p { font-size:.82rem; color:var(--muted); line-height:1.6; }
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(18px)}  to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:480px){
+  .hero h1{font-size:2rem;}
+  .tab-btn{padding:12px 8px;font-size:.75rem;}
+  .day-panel{padding:22px 12px 40px;}
+  .day-header{gap:10px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">💚 Personal Wellness Plan</div>
+  <h1>Hey <span>Yuvarani</span>,<br>Let's Feel Better 🌿</h1>
+  <p class="hero-sub">Your 5-day thyroid &amp; PCOS friendly health roadmap — made with love 💛</p>
+  <div class="hero-pills">
+    <span class="hero-pill">🦋 Thyroid Friendly</span>
+    <span class="hero-pill">🌸 PCOS Support</span>
+    <span class="hero-pill">💧 Hydration Goals</span>
+    <span class="hero-pill">🥗 Anti-Inflammatory</span>
+    <span class="hero-pill">🟢 Veg on Tue &amp; Fri</span>
+  </div>
+</div>
+
+<div class="water-bar">
+  <h2>💧 Daily Water Tracker</h2>
+  <p>Tap each glass as you drink — aim for 8 glasses (2 litres) every day!</p>
+  <div class="glasses-row" id="glasses"></div>
+  <div class="water-count" id="waterCount">0 / 8 glasses today</div>
+  <div class="water-tip">⏰ Drink one glass every 1–1.5 hours &nbsp;|&nbsp; Start your day with warm water + lemon 🍋</div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showDay(0)">Mon</button>
+  <button class="tab-btn" onclick="showDay(1)">Tue <span class="veg-dot"></span></button>
+  <button class="tab-btn" onclick="showDay(2)">Wed</button>
+  <button class="tab-btn" onclick="showDay(3)">Thu</button>
+  <button class="tab-btn" onclick="showDay(4)">Fri <span class="veg-dot"></span></button>
+</div>
+
+<!-- DAY 1 MONDAY -->
+<div class="day-panel active" id="day-0">
+  <div class="day-header">
+    <div class="day-number"><span class="num">1</span><span class="lbl">Mon</span></div>
+    <div class="day-title">Monday — Energise &amp; Reset<small>Non-veg allowed · Anti-inflammatory focus</small></div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card breakfast">
+      <div class="meal-time">☀️ Breakfast · 7:30 – 8:00 AM</div>
+      <div class="meal-icon">🥣</div>
+      <div class="meal-name">Oats Porridge + Walnuts + Banana</div>
+      <div class="meal-desc">Steel-cut or rolled oats cooked in low-fat milk or almond milk. Top with 4 walnuts and half a banana. Oats help regulate blood sugar — key for PCOS. Selenium in walnuts directly supports thyroid hormone production.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Low GI</span>
+        <span class="meal-tag good">✔ Selenium boost</span>
+        <span class="meal-tag good">✔ Hormone friendly</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌿 Mid-Morning · 10:30 AM</div>
+      <div class="meal-icon">🍎</div>
+      <div class="meal-name">Apple + 1 tsp Peanut Butter</div>
+      <div class="meal-desc">Keeps blood sugar stable between meals. Peanut butter adds healthy fat and protein — both help reduce PCOS-related insulin resistance. Avoid biscuits or chips at this time.</div>
+      <div class="meal-tags"><span class="meal-tag good">✔ Blood sugar stable</span></div>
+    </div>
+    <div class="meal-card lunch">
+      <div class="meal-time">🌞 Lunch · 1:00 PM</div>
+      <div class="meal-icon">🍛</div>
+      <div class="meal-name">Brown Rice + Egg Curry + Carrot Salad</div>
+      <div class="meal-desc">Brown rice is better than white for PCOS — lower GI, more fibre. Egg curry (2 eggs) gives iodine and protein, both essential to make thyroid hormones. Raw carrot salad with lemon and cumin on the side for fibre and vitamins.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Iodine rich</span>
+        <span class="meal-tag good">✔ High protein</span>
+        <span class="meal-tag avoid">✘ Avoid white rice</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌤 Evening · 4:30 PM</div>
+      <div class="meal-icon">🥤</div>
+      <div class="meal-name">Coconut Water + Roasted Chana (handful)</div>
+      <div class="meal-desc">Coconut water rehydrates and balances electrolytes. Roasted chana gives plant protein and zinc — both helpful for PCOS hormonal balance. Skip sugary drinks at this time completely.</div>
+      <div class="meal-tags"><span class="meal-tag good">✔ Zinc + Electrolytes</span></div>
+    </div>
+    <div class="meal-card dinner">
+      <div class="meal-time">🌙 Dinner · 7:30 PM</div>
+      <div class="meal-icon">🍲</div>
+      <div class="meal-name">Grilled Chicken + Vegetable Soup + 1 Chapati</div>
+      <div class="meal-desc">Lean grilled chicken (not fried) provides selenium and iodine. Light vegetable soup with spinach, carrots and tomatoes. One whole wheat chapati only. Eat dinner before 8 PM — late eating disrupts thyroid function overnight.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Lean protein</span>
+        <span class="meal-tag avoid">✘ No fried food</span>
+      </div>
+    </div>
+  </div>
+  <div class="avoid-card">
+    <h4>🚫 Avoid Today</h4>
+    <div class="avoid-list">
+      <span class="avoid-item">Refined sugar</span>
+      <span class="avoid-item">Maida / White flour</span>
+      <span class="avoid-item">Raw cabbage / Broccoli</span>
+      <span class="avoid-item">Cold drinks / Soda</span>
+      <span class="avoid-item">Late night eating</span>
+    </div>
+  </div>
+  <div class="tips-card">
+    <h4>🌟 Monday Wellness Tips</h4>
+    <ul class="tips-list">
+      <li>Take thyroid medicine on empty stomach — wait 30–45 min before eating breakfast</li>
+      <li>Warm lemon water first thing in the morning kick-starts digestion and metabolism</li>
+      <li>A 20-min walk after lunch improves insulin sensitivity — great daily habit for PCOS</li>
+      <li>Sleep by 10:30 PM — thyroid hormones and PCOS recovery happen during deep sleep</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DAY 2 TUESDAY VEG -->
+<div class="day-panel" id="day-1">
+  <div class="day-header">
+    <div class="day-number"><span class="num">2</span><span class="lbl">Tue</span></div>
+    <div class="day-title">Tuesday — Gut Heal Day 🌱<small>Full Vegetarian · PCOS hormone reset</small></div>
+    <div class="veg-badge">🟢 VEG DAY</div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card breakfast">
+      <div class="meal-time">☀️ Breakfast · 7:30 – 8:00 AM</div>
+      <div class="meal-icon">🫘</div>
+      <div class="meal-name">Sprouted Moong Dal Dosa + Coconut Chutney</div>
+      <div class="meal-desc">Sprouted moong is a powerhouse — high protein, easy to digest, very low GI. Perfect for PCOS blood sugar management. Coconut chutney adds healthy fat. Avoid regular white rice dosa today — too high GI.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ High plant protein</span>
+        <span class="meal-tag good">✔ Gut friendly</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌿 Mid-Morning · 10:30 AM</div>
+      <div class="meal-icon">🥛</div>
+      <div class="meal-name">Low-fat Curd (1 cup) + Flaxseeds (1 tsp)</div>
+      <div class="meal-desc">Curd is a probiotic that improves gut health — very important for thyroid patients (70% of immune system lives in the gut). Flaxseeds contain lignans that help balance PCOS oestrogen levels naturally. Make this a daily habit!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Probiotic</span>
+        <span class="meal-tag good">✔ Hormone balance</span>
+      </div>
+    </div>
+    <div class="meal-card lunch">
+      <div class="meal-time">🌞 Lunch · 1:00 PM</div>
+      <div class="meal-icon">🍱</div>
+      <div class="meal-name">Millet (Ragi/Bajra) Chapati + Dal + Beetroot Salad</div>
+      <div class="meal-desc">Millet rotis are excellent for PCOS — mineral rich, low GI and gut-friendly. Dal (lentil curry) gives plant protein and iron. Beetroot salad with lemon — beets improve thyroid blood circulation and boost iron absorption significantly.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Iron source</span>
+        <span class="meal-tag good">✔ Low GI millet</span>
+        <span class="meal-tag avoid">✘ No white rice today</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌤 Evening · 4:30 PM</div>
+      <div class="meal-icon">🧃</div>
+      <div class="meal-name">Amla Juice (1 glass) + Pumpkin + Sunflower Seeds</div>
+      <div class="meal-desc">Amla (Indian gooseberry) is one of the best foods for thyroid — powerful antioxidant and rich in Vitamin C which boosts iron absorption. Pumpkin seeds provide zinc which is critical for PCOS hormonal repair. Have a small handful.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Antioxidant</span>
+        <span class="meal-tag good">✔ Zinc for PCOS</span>
+      </div>
+    </div>
+    <div class="meal-card dinner">
+      <div class="meal-time">🌙 Dinner · 7:30 PM</div>
+      <div class="meal-icon">🥘</div>
+      <div class="meal-name">Palak Paneer + 1 Millet Roti + Cucumber Raita</div>
+      <div class="meal-desc">Spinach gives iron and folate — both important when you feel weak and tired. Paneer is a complete protein and helps keep you full all night. Cucumber raita soothes the gut. Keep oil minimal when cooking. Light and nourishing!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Iron + Folate</span>
+        <span class="meal-tag good">✔ Complete protein</span>
+      </div>
+    </div>
+  </div>
+  <div class="avoid-card">
+    <h4>🚫 Avoid Tuesday</h4>
+    <div class="avoid-list">
+      <span class="avoid-item">Excess soy products</span>
+      <span class="avoid-item">Raw cruciferous veg</span>
+      <span class="avoid-item">Processed cheese</span>
+      <span class="avoid-item">Sugar sweets / Mithai</span>
+      <span class="avoid-item">Packaged snacks</span>
+    </div>
+  </div>
+  <div class="tips-card">
+    <h4>🌟 Tuesday Wellness Tips</h4>
+    <ul class="tips-list">
+      <li>Flaxseeds are a top food for PCOS — add 1 tsp daily to curd, smoothies or roti dough</li>
+      <li>Avoid eating raw cabbage, cauliflower and broccoli — they suppress thyroid when raw (cooked is perfectly fine)</li>
+      <li>Do 10 minutes of light stretching or yoga — it lowers cortisol which directly worsens PCOS symptoms</li>
+      <li>Drink water 30 min before meals, not during — it improves digestion significantly</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DAY 3 WEDNESDAY -->
+<div class="day-panel" id="day-2">
+  <div class="day-header">
+    <div class="day-number"><span class="num">3</span><span class="lbl">Wed</span></div>
+    <div class="day-title">Wednesday — Strength Day 💪<small>Non-veg allowed · Iron &amp; Energy focus</small></div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card breakfast">
+      <div class="meal-time">☀️ Breakfast · 7:30 – 8:00 AM</div>
+      <div class="meal-icon">🍳</div>
+      <div class="meal-name">2 Boiled Eggs + Whole Wheat Toast + Orange</div>
+      <div class="meal-desc">Eggs are one of the best thyroid foods — they contain iodine (in yolk) and selenium, both needed to make thyroid hormones. Orange gives Vitamin C which helps your body absorb iron better. A perfect combo when you feel weak and drained!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Iodine + Selenium</span>
+        <span class="meal-tag good">✔ Iron absorption</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌿 Mid-Morning · 10:30 AM</div>
+      <div class="meal-icon">🫐</div>
+      <div class="meal-name">Mixed Berry Smoothie (banana + berries + almond milk)</div>
+      <div class="meal-desc">Berries are anti-inflammatory and antioxidant-rich — they reduce chronic inflammation that worsens both PCOS and thyroid conditions. Banana gives potassium and natural energy. No sugar needed — the fruit is sweet enough!</div>
+      <div class="meal-tags"><span class="meal-tag good">✔ Anti-inflammatory</span></div>
+    </div>
+    <div class="meal-card lunch">
+      <div class="meal-time">🌞 Lunch · 1:00 PM</div>
+      <div class="meal-icon">🐟</div>
+      <div class="meal-name">Grilled Fish (Tuna / Rohu / Salmon) + Brown Rice + Steamed Veggies</div>
+      <div class="meal-desc">Fish is the single best food for thyroid — loaded with iodine, omega-3 fatty acids and selenium. Omega-3 also reduces PCOS inflammation and helps regulate hormones and periods. Have steamed beans, carrot and zucchini on the side.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Omega-3</span>
+        <span class="meal-tag good">✔ Best thyroid food</span>
+        <span class="meal-tag avoid">✘ No deep fry</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌤 Evening · 4:30 PM</div>
+      <div class="meal-icon">🥜</div>
+      <div class="meal-name">Almonds (8–10 nos) + Green Tea (no sugar)</div>
+      <div class="meal-desc">Almonds are high in magnesium — magnesium deficiency is very common in PCOS and causes fatigue and cramps. Green tea contains EGCG which may help reduce androgen (male hormone) levels that cause PCOS symptoms. No sugar in tea!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Magnesium for PCOS</span>
+        <span class="meal-tag good">✔ Anti-androgen</span>
+      </div>
+    </div>
+    <div class="meal-card dinner">
+      <div class="meal-time">🌙 Dinner · 7:30 PM</div>
+      <div class="meal-icon">🍜</div>
+      <div class="meal-name">Chicken Clear Soup + 2 Millet Rotis + Tomato Salad</div>
+      <div class="meal-desc">Clear chicken soup is warming, easy to digest and protein-rich without being heavy at night. Millet rotis keep the GI low. Tomato salad with olive oil and herbs. Keep dinner light and warm. No heavy gravies at night.</div>
+      <div class="meal-tags"><span class="meal-tag good">✔ Light protein dinner</span></div>
+    </div>
+  </div>
+  <div class="avoid-card">
+    <h4>🚫 Avoid Wednesday</h4>
+    <div class="avoid-list">
+      <span class="avoid-item">Fried fish / Chicken fry</span>
+      <span class="avoid-item">White rice in excess</span>
+      <span class="avoid-item">Coffee after 2 PM</span>
+      <span class="avoid-item">Sugary fruit juices</span>
+    </div>
+  </div>
+  <div class="tips-card">
+    <h4>🌟 Wednesday Wellness Tips</h4>
+    <ul class="tips-list">
+      <li>If you feel very weak and tired, it may be low iron — ask your doctor to check ferritin and TSH together</li>
+      <li>Avoid coffee within 4 hours of taking thyroid medicine — it blocks medicine absorption</li>
+      <li>Fish 2–3 times a week is far better than thyroid or omega-3 supplements for natural recovery</li>
+      <li>A 15-min walk after dinner improves insulin sensitivity overnight and helps PCOS weight management</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DAY 4 THURSDAY -->
+<div class="day-panel" id="day-3">
+  <div class="day-header">
+    <div class="day-number"><span class="num">4</span><span class="lbl">Thu</span></div>
+    <div class="day-title">Thursday — Balance &amp; Glow ✨<small>Non-veg allowed · Skin + Hormone focus</small></div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card breakfast">
+      <div class="meal-time">☀️ Breakfast · 7:30 – 8:00 AM</div>
+      <div class="meal-icon">🌾</div>
+      <div class="meal-name">Ragi (Finger Millet) Idli + Sambar with Drumstick</div>
+      <div class="meal-desc">Ragi is excellent for thyroid — high in calcium, iron and amino acids. Ragi idlis are lighter than regular idli and give steady energy. Sambar with drumstick (moringa) adds powerful thyroid support. Moringa is one of the best foods for thyroid health!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Calcium + Iron</span>
+        <span class="meal-tag good">✔ Moringa thyroid boost</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌿 Mid-Morning · 10:30 AM</div>
+      <div class="meal-icon">🥝</div>
+      <div class="meal-name">Kiwi + Papaya (small bowl)</div>
+      <div class="meal-desc">Kiwi is one of the highest Vitamin C fruits — boosts iron absorption and fights inflammation. Papaya contains papain enzyme which aids digestion and helps with PCOS-related hormonal skin issues like acne and oiliness. Great skin food!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Skin glow</span>
+        <span class="meal-tag good">✔ Digestive aid</span>
+      </div>
+    </div>
+    <div class="meal-card lunch">
+      <div class="meal-time">🌞 Lunch · 1:00 PM</div>
+      <div class="meal-icon">🥚</div>
+      <div class="meal-name">Egg Bhurji (2 eggs, turmeric) + Brown Rice + Spinach Soup</div>
+      <div class="meal-desc">Egg bhurji with onion, tomato and turmeric (minimal oil) is perfect for PCOS. Turmeric is deeply anti-inflammatory. Spinach soup adds iron and folate which fight the tiredness and weakness you feel. A very healing lunch!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Iron + Folate</span>
+        <span class="meal-tag good">✔ Turmeric anti-inflame</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌤 Evening · 4:30 PM</div>
+      <div class="meal-icon">🫚</div>
+      <div class="meal-name">Hummus + Cucumber / Carrot Sticks</div>
+      <div class="meal-desc">Hummus made from chickpeas is excellent plant protein and low GI. The sesame (tahini) in hummus provides calcium and healthy fat. Crunchy vegetables add fibre which is essential for PCOS hormonal detox through digestion. Very filling snack!</div>
+      <div class="meal-tags"><span class="meal-tag good">✔ Fibre + Protein combo</span></div>
+    </div>
+    <div class="meal-card dinner">
+      <div class="meal-time">🌙 Dinner · 7:30 PM</div>
+      <div class="meal-icon">🍲</div>
+      <div class="meal-name">Chicken Bone Broth Soup + 1 Roti + Fresh Salad</div>
+      <div class="meal-desc">Bone broth is incredibly nourishing when feeling weak — full of collagen, minerals and amino acids supporting thyroid, gut and joint health. Add ginger and turmeric while cooking. Keep the roti to just one. Light and deeply healing dinner.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Gut healing collagen</span>
+        <span class="meal-tag good">✔ Mineral rich</span>
+      </div>
+    </div>
+  </div>
+  <div class="avoid-card">
+    <h4>🚫 Avoid Thursday</h4>
+    <div class="avoid-list">
+      <span class="avoid-item">Excess salt (water retention)</span>
+      <span class="avoid-item">Processed / Packaged foods</span>
+      <span class="avoid-item">Alcohol</span>
+      <span class="avoid-item">Excess dairy if acne prone</span>
+    </div>
+  </div>
+  <div class="tips-card">
+    <h4>🌟 Thursday Wellness Tips</h4>
+    <ul class="tips-list">
+      <li>Moringa (drumstick leaves or powder) is one of the most powerful thyroid support foods — add to sambar or dal every week</li>
+      <li>Turmeric + black pepper in cooking enhances anti-inflammatory absorption by a huge amount — always pair them!</li>
+      <li>PCOS can cause skin issues — drink all 8 glasses of water and consider reducing dairy if you notice breakouts</li>
+      <li>Magnesium-rich foods (almonds, seeds, millet) help with PCOS mood swings, cramps and better sleep quality</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DAY 5 FRIDAY VEG -->
+<div class="day-panel" id="day-4">
+  <div class="day-header">
+    <div class="day-number"><span class="num">5</span><span class="lbl">Fri</span></div>
+    <div class="day-title">Friday — Cleanse &amp; Restore 🌸<small>Full Vegetarian · Detox &amp; Weekly Reset</small></div>
+    <div class="veg-badge">🟢 VEG DAY</div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card breakfast">
+      <div class="meal-time">☀️ Breakfast · 7:30 – 8:00 AM</div>
+      <div class="meal-icon">🥗</div>
+      <div class="meal-name">Moong Dal Cheela (2 nos) + Mint Chutney + Guava</div>
+      <div class="meal-desc">Moong dal cheela is a high protein savoury pancake — filling, light and very low GI. Perfect for PCOS mornings when you need slow energy release throughout the day. Mint chutney aids digestion. Guava is high in Vitamin C and helps with PCOS skin.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ High protein veg</span>
+        <span class="meal-tag good">✔ Slow energy release</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌿 Mid-Morning · 10:30 AM</div>
+      <div class="meal-icon">🌿</div>
+      <div class="meal-name">Methi (Fenugreek) Water + 6 Soaked Almonds</div>
+      <div class="meal-desc">Soak 1 tsp fenugreek seeds in water overnight — drink the water and eat the seeds in the morning. Methi is a superstar for both PCOS (reduces insulin resistance) and thyroid (reduces inflammation). Soaked almonds are more bioavailable than raw ones.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ PCOS insulin support</span>
+        <span class="meal-tag good">✔ Thyroid friendly</span>
+      </div>
+    </div>
+    <div class="meal-card lunch">
+      <div class="meal-time">🌞 Lunch · 1:00 PM</div>
+      <div class="meal-icon">🍛</div>
+      <div class="meal-name">Rajma / Chickpea Curry + Brown Rice + Onion Salad</div>
+      <div class="meal-desc">Rajma (kidney beans) or chickpeas are among the best PCOS foods — high fibre, plant protein and minerals that support hormonal balance. Brown rice and legume combination gives complete amino acids without any meat. Add cumin and turmeric to the curry.</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Complete plant protein</span>
+        <span class="meal-tag good">✔ Hormone support</span>
+      </div>
+    </div>
+    <div class="meal-card snack">
+      <div class="meal-time">🌤 Evening · 4:30 PM</div>
+      <div class="meal-icon">🍵</div>
+      <div class="meal-name">Turmeric Milk (Haldi Doodh) + 2 Dates</div>
+      <div class="meal-desc">Warm turmeric milk with a pinch of black pepper and cinnamon is deeply anti-inflammatory and reduces PCOS and thyroid inflammation. Dates give iron and natural sugar to beat the 4 PM energy crash without causing a blood sugar spike. Very comforting!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Anti-inflammatory</span>
+        <span class="meal-tag good">✔ Iron from dates</span>
+      </div>
+    </div>
+    <div class="meal-card dinner">
+      <div class="meal-time">🌙 Dinner · 7:30 PM</div>
+      <div class="meal-icon">🥣</div>
+      <div class="meal-name">Vegetable Khichdi + Raita + Steamed Beans</div>
+      <div class="meal-desc">Khichdi (rice + moong dal + vegetables) is the ultimate healing meal for thyroid and PCOS patients — easy to digest, balanced macros and deeply comforting. Add turmeric, 1 tsp ghee and cumin. Ghee in small amounts supports thyroid hormone synthesis. Lightest dinner of the week!</div>
+      <div class="meal-tags">
+        <span class="meal-tag good">✔ Most gut-friendly</span>
+        <span class="meal-tag good">✔ Ghee for hormones</span>
+      </div>
+    </div>
+  </div>
+  <div class="avoid-card">
+    <h4>🚫 Avoid Friday</h4>
+    <div class="avoid-list">
+      <span class="avoid-item">Excess soy milk / soy products</span>
+      <span class="avoid-item">Carbonated drinks</span>
+      <span class="avoid-item">Junk / Fast food</span>
+      <span class="avoid-item">Skipping any meal</span>
+      <span class="avoid-item">Late night snacks</span>
+    </div>
+  </div>
+  <div class="tips-card">
+    <h4>🌟 Friday Wellness Tips</h4>
+    <ul class="tips-list">
+      <li>Fenugreek (methi) seeds soaked overnight is one of the most evidence-backed natural PCOS remedies — make it a daily habit!</li>
+      <li>End of week check: Did you drink 8 glasses every day? Consistent hydration matters more than being perfect on some days</li>
+      <li>Cinnamon in food and warm drinks helps reduce insulin resistance — add it to oats, milk or smoothies daily</li>
+      <li>Sleep is medicine for both thyroid and PCOS — poor sleep raises cortisol and worsens both. Aim for 7–8 hours every night 💤</li>
+    </ul>
+  </div>
+</div>
+
+<!-- REMINDERS -->
+<div class="reminder-section">
+  <h2>⏰ Daily Reminders for Yuvarani</h2>
+  <p>Small habits every single day lead to big changes — you've got this! 💪</p>
+  <div class="reminder-cards">
+    <div class="rem-card">
+      <div class="rem-icon">💊</div>
+      <div class="rem-time">6:30 AM</div>
+      <div class="rem-text">Thyroid medicine on empty stomach. Wait 45 min before eating.</div>
+    </div>
+    <div class="rem-card">
+      <div class="rem-icon">🍋</div>
+      <div class="rem-time">7:00 AM</div>
+      <div class="rem-text">Warm water + lemon (or methi water on Fri). Kick-starts metabolism!</div>
+    </div>
+    <div class="rem-card">
+      <div class="rem-icon">💧</div>
+      <div class="rem-time">All Day</div>
+      <div class="rem-text">Drink 8 glasses of water. Set phone reminders every 1.5 hours!</div>
+    </div>
+    <div class="rem-card">
+      <div class="rem-icon">🚶‍♀️</div>
+      <div class="rem-time">After Lunch</div>
+      <div class="rem-text">20-min walk. Improves insulin sensitivity — key habit for PCOS.</div>
+    </div>
+    <div class="rem-card">
+      <div class="rem-icon">🌙</div>
+      <div class="rem-time">8:00 PM</div>
+      <div class="rem-text">Finish dinner by 8 PM. Late eating disrupts thyroid hormones.</div>
+    </div>
+    <div class="rem-card">
+      <div class="rem-icon">😴</div>
+      <div class="rem-time">10:30 PM</div>
+      <div class="rem-text">Lights out. 7–8 hrs sleep repairs thyroid and PCOS hormones.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span class="heart">💚</span>
+  <p><strong>Made with love for Yuvarani</strong><br>
+  These are general wellness guidelines based on thyroid and PCOS-friendly nutrition. Always follow your doctor's advice for medicines and treatment. Every small healthy choice you make every day counts — you are doing amazing! 🌸</p>
+</div>
+
+<script>
+function showDay(index) {
+  document.querySelectorAll('.day-panel').forEach((p,i) => p.classList.toggle('active', i===index));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===index));
+  window.scrollTo({top: document.querySelector('.tab-nav').offsetTop - 10, behavior:'smooth'});
+}
+
+// Water tracker
+const row = document.getElementById('glasses');
+const countEl = document.getElementById('waterCount');
+let filled = 0;
+
+for (let i = 0; i < 8; i++) {
+  const g = document.createElement('div');
+  g.className = 'glass';
+  g.innerHTML = '<div class="glass-fill"></div>';
+  g.setAttribute('title', `Glass ${i+1}`);
+  g.addEventListener('click', () => {
+    if (g.classList.contains('filled')) {
+      g.classList.remove('filled');
+      filled = Math.max(0, filled - 1);
+    } else {
+      g.classList.add('filled');
+      filled++;
+    }
+    const msgs = ['Keep going! 💧','Great start! 🌊','Nice! Stay hydrated 💦','Halfway there! 💙','More than half! 🎉','Almost done! ⭐','One more glass! 🌈','You did it! 🎊 All 8 glasses today, Yuvarani!'];
+    countEl.textContent = filled === 8
+      ? '🎉 Amazing! All 8 glasses done today, Yuvarani!'
+      : `${filled} / 8 glasses · ${msgs[Math.max(0,filled-1)]}`;
+  });
+  row.appendChild(g);
+}
+</script>
+</body>
+</html>
