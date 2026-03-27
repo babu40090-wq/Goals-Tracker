@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BA Class Notebook – COEPD</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f1f3d;--blue:#1a56db;--sky:#3b82f6;--accent:#f59e0b;
+  --green:#10b981;--purple:#8b5cf6;--bg:#f0f4ff;--card:#fff;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+header{background:var(--navy);padding:14px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(15,31,61,.3)}
+header h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#fff}
+header p{font-size:.68rem;color:#93c5fd;margin-top:1px;padding-bottom:10px}
+.nav-tabs{display:flex;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.1)}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:10px 14px;font-size:.73rem;font-weight:600;color:#93c5fd;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;font-family:'Syne',sans-serif;background:none;border-left:none;border-right:none;border-top:none}
+.nav-tab.active{color:#fff;border-bottom-color:var(--accent)}
+
+.view{display:none;padding:12px 16px 90px}
+.view.active{display:block}
+
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--border);border-radius:12px;padding:9px 12px;margin-bottom:8px}
+.search-box:focus-within{border-color:var(--sky)}
+.search-box input{border:none;outline:none;flex:1;font-family:'DM Sans',sans-serif;font-size:.88rem;background:transparent}
+.search-count{font-size:.72rem;color:var(--muted);margin-bottom:8px}
+
+.day-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;padding-bottom:2px}
+.day-tabs::-webkit-scrollbar{display:none}
+.dtab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--muted);transition:all .2s}
+.dtab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* DAY CARD */
+.day-card{background:var(--card);border-radius:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(15,31,61,.07);overflow:hidden;border:1.5px solid var(--border)}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(135deg,var(--navy),#1e3a7a);cursor:pointer}
+.day-hdr-l{display:flex;align-items:center;gap:9px}
+.badge{background:var(--accent);color:var(--navy);font-family:'Syne',sans-serif;font-weight:800;font-size:.65rem;padding:3px 9px;border-radius:20px}
+.day-ttl{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:#fff}
+.day-dt{font-size:.66rem;color:#93c5fd;margin-top:1px}
+.day-arr{color:#93c5fd;font-size:.9rem;transition:transform .3s}
+.day-arr.open{transform:rotate(180deg)}
+.day-body{display:none;padding:12px 14px}
+.day-body.open{display:block}
+
+/* TOPIC BLOCK */
+.topic-block{border-left:3px solid var(--sky);padding-left:11px;margin-bottom:18px;background:#fafcff;border-radius:0 10px 10px 0;padding:12px 12px 12px 14px}
+.topic-name{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* POINTERS */
+.section-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--sky);margin-bottom:4px;margin-top:10px}
+.pts{list-style:none;margin-bottom:6px}
+.pts li{display:flex;gap:6px;font-size:.8rem;padding:2px 0;line-height:1.6}
+.pts li::before{content:"▸";color:var(--sky);flex-shrink:0;font-size:.7rem;margin-top:3px}
+
+/* DETAILED NOTES */
+.detail-notes{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:9px 11px;font-size:.8rem;color:#1e3a5f;line-height:1.7;margin-bottom:8px;white-space:pre-wrap}
+
+/* MY NOTE */
+.mynote{background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:7px 9px;font-size:.78rem;color:#92400e;margin-bottom:8px}
+.mynote b{color:#b45309}
+
+/* SCREENSHOT PASTE ZONE */
+.paste-zone{border:2px dashed #cbd5e1;border-radius:9px;background:#f8faff;margin-bottom:8px;overflow:hidden;position:relative;transition:border-color .2s,background .2s}
+.paste-zone.drag-over{border-color:var(--sky);background:#eff6ff}
+.paste-zone img{width:100%;display:block;cursor:zoom-in}
+.paste-ph{padding:18px 14px;text-align:center}
+.paste-ph .pi{font-size:1.8rem;margin-bottom:5px}
+.paste-ph .pt{font-size:.78rem;font-weight:600;color:var(--navy);margin-bottom:3px}
+.paste-ph .ps{font-size:.68rem;color:var(--muted);margin-bottom:10px}
+.paste-actions{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.paste-btn{padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:4px}
+.pbtn-paste{background:var(--sky);color:#fff}
+.pbtn-file{background:#e0e7ff;color:#3730a3}
+.paste-hint{font-size:.65rem;color:var(--muted);margin-top:6px}
+.remove-ss{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:.65rem;cursor:pointer}
+
+/* CASE STUDY */
+.case-study-box{background:#fdf4ff;border:1px solid #e9d5ff;border-radius:9px;padding:10px 12px;margin-bottom:6px}
+.cs-q{font-size:.78rem;font-weight:600;color:#6b21a8;margin-bottom:5px}
+.cs-q-text{font-size:.79rem;color:#1e293b;margin-bottom:8px;line-height:1.6}
+.cs-ans-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:4px}
+.cs-ans-text{font-size:.79rem;color:#064e3b;line-height:1.6;background:#ecfdf5;border-radius:6px;padding:7px 9px}
+
+.add-tp-btn{width:100%;padding:8px;border:1.5px dashed var(--sky);border-radius:9px;background:transparent;color:var(--sky);font-family:'DM Sans',sans-serif;font-size:.77rem;font-weight:500;cursor:pointer;margin-top:4px}
+.add-tp-btn:hover{background:#eff6ff}
+
+/* FAB */
+.fab{position:fixed;bottom:22px;right:18px;background:var(--blue);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.5rem;cursor:pointer;box-shadow:0 6px 22px rgba(26,86,219,.4);display:flex;align-items:center;justify-content:center;z-index:200}
+
+/* EXPORT */
+.exp-row{display:flex;gap:8px;margin-bottom:12px}
+.exp-btn{flex:1;padding:10px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.exp-pdf{background:#ef4444;color:#fff}
+.exp-word{background:#1a56db;color:#fff}
+
+/* FLASHCARD */
+.fc-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fc-ctr{font-size:.78rem;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;flex-shrink:0}
+.fc-prog{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.fc-bar{height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.fc-wrap{perspective:1000px;cursor:pointer;margin-bottom:12px;min-height:220px}
+.fc-inner{position:relative;width:100%;min-height:220px;transform-style:preserve-3d;transition:transform .5s}
+.fc-inner.flipped{transform:rotateY(180deg)}
+.fc-f,.fc-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:24px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:220px}
+.fc-f{background:linear-gradient(135deg,var(--navy),#1e3a7a);color:#fff}
+.fc-b{background:linear-gradient(135deg,#065f46,#10b981);color:#fff;transform:rotateY(180deg)}
+.fc-lbl{font-size:.62rem;font-weight:700;letter-spacing:1px;opacity:.7;margin-bottom:8px;font-family:'Syne',sans-serif}
+.fc-q{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;line-height:1.5}
+.fc-a{font-size:.85rem;line-height:1.6}
+.fc-tip{font-size:.65rem;opacity:.6;margin-top:10px}
+.fc-nav{display:flex;gap:8px}
+.fc-nav button{flex:1;padding:10px;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer}
+.fc-prev{background:var(--border);color:var(--text)}
+.fc-next{background:var(--accent);color:var(--navy)}
+.fc-filters{display:flex;gap:8px;margin-bottom:10px}
+.fc-filters select{flex:1;padding:8px 9px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;background:#fff}
+
+/* SUMMARY */
+.sum-sel{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.84rem;outline:none;background:#fff;margin-bottom:12px}
+.sum-card{background:#fff;border-radius:13px;border:1.5px solid var(--border);margin-bottom:11px;overflow:hidden;box-shadow:0 2px 8px rgba(15,31,61,.06)}
+.sum-hdr{background:linear-gradient(90deg,var(--sky),#6366f1);padding:9px 13px}
+.sum-hdr h4{font-family:'Syne',sans-serif;font-weight:700;color:#fff;font-size:.85rem}
+.sum-hdr span{font-size:.65rem;color:rgba(255,255,255,.8)}
+.sum-body{padding:11px 13px}
+.sum-tag{display:inline-block;background:#dbeafe;color:#1d4ed8;font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:9px;margin-bottom:5px}
+
+/* QUICK REV */
+.qr-card{background:#fff;border-radius:13px;border-left:4px solid var(--accent);padding:12px 14px;margin-bottom:11px;box-shadow:0 2px 8px rgba(15,31,61,.06)}
+.qr-top{font-family:'Syne',sans-serif;font-size:.83rem;font-weight:700;color:var(--navy);margin-bottom:2px}
+.qr-day{font-size:.66rem;color:var(--muted);margin-bottom:7px}
+.qr-note{font-size:.8rem;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:7px 9px;margin-bottom:6px}
+.qr-detail{font-size:.78rem;color:#1e3a5f;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:7px;padding:7px 9px;margin-bottom:6px;white-space:pre-wrap}
+.qr-case{font-size:.78rem;background:#fdf4ff;border:1px solid #e9d5ff;border-radius:7px;padding:7px 9px}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,31,61,.6);backdrop-filter:blur(3px);z-index:300;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:500px;padding:20px 18px 34px;animation:su .3s ease;max-height:92vh;overflow-y:auto}
+@keyframes su{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h3{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:800;color:var(--navy);margin-bottom:13px}
+.modal label{display:block;font-size:.74rem;font-weight:500;color:var(--muted);margin-bottom:3px;margin-top:11px}
+.modal input,.modal textarea{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.84rem;outline:none;color:var(--text)}
+.modal input:focus,.modal textarea:focus{border-color:var(--sky)}
+.modal textarea{resize:vertical;min-height:80px}
+.hint{font-size:.67rem;color:var(--muted);margin-top:2px}
+.modal-btns{display:flex;gap:9px;margin-top:15px}
+.btn-ok{flex:1;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer}
+.btn-cl{padding:11px 16px;background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.84rem;cursor:pointer}
+.modal-section-hdr{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sky);margin-top:16px;margin-bottom:2px;padding-top:12px;border-top:1px dashed var(--border)}
+
+.empty{text-align:center;padding:48px 18px}
+.empty .ei{font-size:2.6rem;margin-bottom:9px}
+.empty h3{font-family:'Syne',sans-serif;font-weight:700;color:var(--navy);margin-bottom:4px}
+.empty p{font-size:.78rem;color:var(--muted)}
+mark{background:#fef08a;border-radius:2px;padding:0 2px}
+.exp-set{background:#fff;border-radius:13px;border:1.5px solid var(--border);padding:14px;margin-bottom:12px}
+.exp-set h4{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:var(--navy);margin-bottom:10px}
+.exp-set label{display:flex;align-items:center;gap:8px;font-size:.8rem;margin-bottom:6px;cursor:pointer;font-weight:normal;margin-top:0}
+.exp-set select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;background:#fff;margin-bottom:10px}
+.tip-box{background:#eff6ff;border-radius:10px;padding:10px 12px;font-size:.74rem;color:#1d4ed8}
+
+/* PASTE ACTIVE INDICATOR */
+.paste-active-hint{font-size:.68rem;color:var(--sky);text-align:center;padding:4px 0;display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📓 BA Class Notebook</h1>
+  <p>COEPD Chennai · Business Analyst Training</p>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('notes',this)">📒 Notes</button>
+    <button class="nav-tab" onclick="switchView('summary',this)">📊 Summary</button>
+    <button class="nav-tab" onclick="switchView('revision',this)">⚡ Revision</button>
+    <button class="nav-tab" onclick="switchView('flashcards',this)">🃏 Flashcards</button>
+    <button class="nav-tab" onclick="switchView('export',this)">📤 Export</button>
+  </div>
+</header>
+
+<!-- NOTES -->
+<div class="view active" id="view-notes">
+  <div class="search-box" style="margin-top:10px">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="Search topics, notes, keywords..." oninput="handleSearch()">
+  </div>
+  <div class="search-count" id="searchCount"></div>
+  <div class="day-tabs" id="dayTabsBar"></div>
+  <div id="notesContent"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="view" id="view-summary">
+  <select class="sum-sel" id="summaryFilter" onchange="renderSummary()">
+    <option value="all">All Topics</option>
+  </select>
+  <div id="summaryContent"></div>
+</div>
+
+<!-- REVISION -->
+<div class="view" id="view-revision">
+  <p style="font-size:.76rem;color:var(--muted);margin-bottom:11px">All your personal notes, detailed notes & case studies — perfect for last-minute revision.</p>
+  <div id="revisionContent"></div>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="view" id="view-flashcards">
+  <div class="fc-filters">
+    <select id="fcDay" onchange="buildCards()"><option value="all">All Days</option></select>
+    <select id="fcTopic" onchange="buildCards()"><option value="all">All Topics</option></select>
+  </div>
+  <div class="fc-meta">
+    <span class="fc-ctr" id="fcCtr">0 / 0</span>
+    <div class="fc-prog"><div class="fc-bar" id="fcBar" style="width:0%"></div></div>
+    <span style="font-size:.68rem;color:var(--muted)">tap to flip</span>
+  </div>
+  <div class="fc-wrap" onclick="flipCard()">
+    <div class="fc-inner" id="fcInner">
+      <div class="fc-f">
+        <div class="fc-lbl">QUESTION</div>
+        <div class="fc-q" id="fcQ">Add topics with pointers to generate flashcards.</div>
+        <div class="fc-tip">👆 tap card to reveal answer</div>
+      </div>
+      <div class="fc-b">
+        <div class="fc-lbl">ANSWER</div>
+        <div class="fc-a" id="fcA">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="fc-prev" onclick="prevCard()">← Prev</button>
+    <button class="fc-next" onclick="nextCard()">Next →</button>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="view" id="view-export">
+  <div class="exp-set">
+    <h4>📤 Export Settings</h4>
+    <label style="font-size:.74rem;font-weight:500;color:var(--muted);display:block;margin-bottom:3px">Days to Export</label>
+    <select id="expDayFilter"><option value="all">All Days</option></select>
+    <label style="font-size:.74rem;font-weight:500;color:var(--muted);display:block;margin-bottom:6px;margin-top:8px">Include in Export</label>
+    <label><input type="checkbox" id="expPts" checked> Key Pointers</label>
+    <label><input type="checkbox" id="expDet" checked> Detailed Notes</label>
+    <label><input type="checkbox" id="expNts" checked> My Personal Notes</label>
+    <label><input type="checkbox" id="expCs" checked> Case Studies & Answers</label>
+    <label><input type="checkbox" id="expFc" checked> Flashcard Q&A Table</label>
+  </div>
+  <div class="exp-row">
+    <button class="exp-btn exp-pdf" onclick="exportPDF()">📄 Export PDF</button>
+    <button class="exp-btn exp-word" onclick="exportWord()">📝 Export Word</button>
+  </div>
+  <div class="tip-box">💡 <strong>Tip:</strong> Use PDF to print or save. Use Word to edit further before your exam.</div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="openDayModal()">+</button>
+
+<!-- DAY MODAL -->
+<div class="modal-bg" id="dayModal">
+  <div class="modal">
+    <h3>📅 Add New Class Day</h3>
+    <label>Class Date</label>
+    <input type="date" id="newDate">
+    <label>Chapter / Session Title</label>
+    <input type="text" id="newTitle" placeholder="e.g. Chapter 2 – Elicitation Techniques">
+    <div class="modal-btns">
+      <button class="btn-cl" onclick="closeDayModal()">Cancel</button>
+      <button class="btn-ok" onclick="addDay()">Add Day ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPIC MODAL -->
+<div class="modal-bg" id="topicModal">
+  <div class="modal">
+    <h3>📝 Add Topic</h3>
+
+    <div class="modal-section-hdr" style="border-top:none;margin-top:0;padding-top:0">📌 Basic Info</div>
+    <label>Topic Name</label>
+    <input type="text" id="tName" placeholder="e.g. BABOK Knowledge Areas">
+
+    <label>Key Pointers</label>
+    <textarea id="tPts" style="min-height:90px" placeholder="One pointer per line&#10;e.g.&#10;BABOK has 6 knowledge areas&#10;Published by IIBA&#10;Version 3 is current standard"></textarea>
+    <p class="hint">💡 Each line = one bullet point + one flashcard</p>
+
+    <div class="modal-section-hdr">📝 Detailed Notes</div>
+    <label>Detailed Explanation / Elaboration</label>
+    <textarea id="tDetail" style="min-height:100px" placeholder="Write detailed notes here...&#10;e.g. BABOK V3 was released in 2015 and replaced V2. It defines 6 knowledge areas that are not phases but overlapping practice areas. Each KA contains tasks, inputs, outputs and guidelines..."></textarea>
+
+    <label>My Personal Note / Observation</label>
+    <input type="text" id="tNote" placeholder="Your own takeaway or connection to real work...">
+
+    <div class="modal-section-hdr">📚 Case Study</div>
+    <label>Case Study Question</label>
+    <textarea id="tCsQ" style="min-height:70px" placeholder="e.g. A bank wants to replace its loan approval system. As a BA, which BABOK knowledge area do you apply first and why?"></textarea>
+    <label>Answer</label>
+    <textarea id="tCsA" style="min-height:80px" placeholder="e.g. Strategy Analysis — because first we need to understand the business need, assess current state, define future state, and establish the solution scope before eliciting any requirements..."></textarea>
+
+    <div class="modal-btns">
+      <button class="btn-cl" onclick="closeTopicModal()">Cancel</button>
+      <button class="btn-ok" onclick="addTopic()">Add Topic ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var DB_KEY = 'ba_nb_v4';
+var data = [];
+var curDayId = null;
+var activeDayTab = 'all';
+var searchQ = '';
+var fcCards = [], fcIdx = 0, fcFlip = false;
+
+function load() {
+  var raw = localStorage.getItem(DB_KEY);
+  if (raw) { try { data = JSON.parse(raw); } catch(e) { data = []; } }
+  if (!data || !data.length) { data = seedData(); }
+  save();
+}
+function save() { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
+
+// ── VIEW SWITCH ──
+function switchView(view, el) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('view-' + view).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('fabBtn').style.display = view === 'notes' ? 'flex' : 'none';
+  if (view === 'notes') renderNotes();
+  else if (view === 'summary') renderSummary();
+  else if (view === 'revision') renderRevision();
+  else if (view === 'flashcards') { fillFcFilters(); buildCards(); }
+  else if (view === 'export') fillExpFilter();
+}
+
+// ── RENDER NOTES ──
+function renderNotes() {
+  renderDayTabs();
+  var content = document.getElementById('notesContent');
+  var days = activeDayTab === 'all' ? data.slice() : data.filter(function(d){ return d.id === activeDayTab; });
+
+  if (searchQ) {
+    days = days.map(function(day) {
+      return Object.assign({}, day, {
+        topics: day.topics.filter(function(t) {
+          return t.name.toLowerCase().indexOf(searchQ) > -1 ||
+            t.pointers.some(function(p){ return p.toLowerCase().indexOf(searchQ) > -1; }) ||
+            (t.detail && t.detail.toLowerCase().indexOf(searchQ) > -1) ||
+            (t.myNote && t.myNote.toLowerCase().indexOf(searchQ) > -1) ||
+            (t.csQ && t.csQ.toLowerCase().indexOf(searchQ) > -1) ||
+            (t.csA && t.csA.toLowerCase().indexOf(searchQ) > -1) ||
+            day.title.toLowerCase().indexOf(searchQ) > -1;
+        })
+      });
+    }).filter(function(d){ return d.topics.length > 0 || d.title.toLowerCase().indexOf(searchQ) > -1; });
+    var total = days.reduce(function(a,d){ return a + d.topics.length; }, 0);
+    document.getElementById('searchCount').textContent = total ? total + ' result' + (total!==1?'s':'') + ' found' : 'No results';
+  } else {
+    document.getElementById('searchCount').textContent = '';
+  }
+
+  if (!days.length) {
+    content.innerHTML = '<div class="empty"><div class="ei">' + (searchQ?'🔍':'📓') + '</div><h3>' + (searchQ?'No results':'No class days yet') + '</h3><p>' + (searchQ?'Try different keywords':'Tap + to add your first class day') + '</p></div>';
+    return;
+  }
+  content.innerHTML = days.map(function(day){ return renderDayCard(day); }).join('');
+  attachPasteListeners();
+}
+
+function renderDayTabs() {
+  var bar = document.getElementById('dayTabsBar');
+  var html = '<button class="dtab '+(activeDayTab==='all'?'active':'')+'" onclick="filterDay(\'all\',this)">All Days</button>';
+  data.forEach(function(d){
+    html += '<button class="dtab '+(activeDayTab===d.id?'active':'')+'" onclick="filterDay(\''+d.id+'\',this)">'+shortDate(d.date)+'</button>';
+  });
+  bar.innerHTML = html;
+}
+
+function renderDayCard(day) {
+  var idx = data.findIndex(function(d){ return d.id === day.id; });
+  var isOpen = day.open || !!searchQ;
+  var topicsHtml = '';
+  if (!day.topics.length) {
+    topicsHtml = '<p style="font-size:.76rem;color:var(--muted);text-align:center;padding:8px 0">No topics yet</p>';
+  } else {
+    day.topics.forEach(function(t,ti){ topicsHtml += renderTopic(day.id, t, ti); });
+  }
+  return '<div class="day-card">'+
+    '<div class="day-hdr" onclick="toggleDay(\''+day.id+'\')">'+
+      '<div class="day-hdr-l">'+
+        '<div class="badge">Day '+(idx+1)+'</div>'+
+        '<div><div class="day-ttl">'+hl(day.title)+'</div><div class="day-dt">'+fullDate(day.date)+'</div></div>'+
+      '</div>'+
+      '<div class="day-arr '+(isOpen?'open':'')+'">▾</div>'+
+    '</div>'+
+    '<div class="day-body '+(isOpen?'open':'')+'">'+
+      topicsHtml+
+      '<button class="add-tp-btn" onclick="openTopicModal(\''+day.id+'\')">+ Add Topic</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function renderTopic(dayId, t, ti) {
+  // POINTERS
+  var ptsHtml = '';
+  if (t.pointers && t.pointers.length) {
+    ptsHtml = '<div class="section-label">📌 Key Pointers</div><ul class="pts">'+
+      t.pointers.map(function(p){ return '<li>'+hl(p)+'</li>'; }).join('')+'</ul>';
+  }
+
+  // DETAILED NOTES
+  var detailHtml = '';
+  if (t.detail && t.detail.trim()) {
+    detailHtml = '<div class="section-label">📝 Detailed Notes</div>'+
+      '<div class="detail-notes">'+hl(t.detail)+'</div>';
+  }
+
+  // MY NOTE
+  var noteHtml = '';
+  if (t.myNote && t.myNote.trim()) {
+    noteHtml = '<div class="mynote"><b>💬 My Note:</b> '+hl(t.myNote)+'</div>';
+  }
+
+  // SCREENSHOT PASTE ZONE
+  var ssHtml = '';
+  if (t.screenshot) {
+    ssHtml = '<div class="paste-zone" id="pz-'+dayId+'-'+ti+'">'+
+      '<img src="'+t.screenshot+'" alt="Slide screenshot">'+
+      '<button class="remove-ss" onclick="removeShot(\''+dayId+'\','+ti+')">✕ Remove</button>'+
+    '</div>';
+  } else {
+    ssHtml = '<div class="paste-zone" id="pz-'+dayId+'-'+ti+'" '+
+      'ondragover="event.preventDefault();this.classList.add(\'drag-over\')" '+
+      'ondragleave="this.classList.remove(\'drag-over\')" '+
+      'ondrop="handleDrop(event,\''+dayId+'\','+ti+')" >'+
+      '<div class="paste-ph">'+
+        '<div class="pi">📋</div>'+
+        '<div class="pt">Paste Slide Screenshot Here</div>'+
+        '<div class="ps">Take a snip → Ctrl+C → Click below → Ctrl+V</div>'+
+        '<div class="paste-actions">'+
+          '<button class="paste-btn pbtn-paste" onclick="activatePaste(\''+dayId+'\','+ti+')">📋 Click then Ctrl+V</button>'+
+          '<button class="paste-btn pbtn-file" onclick="triggerFile(\''+dayId+'\','+ti+')">📁 Browse File</button>'+
+        '</div>'+
+        '<div class="paste-hint">Also supports drag & drop</div>'+
+      '</div>'+
+    '</div>'+
+    '<input type="file" accept="image/*" style="display:none" id="fi-'+dayId+'-'+ti+'" onchange="handleFile(\''+dayId+'\','+ti+',this)">';
+  }
+
+  // CASE STUDY
+  var csHtml = '';
+  if ((t.csQ && t.csQ.trim()) || (t.csA && t.csA.trim())) {
+    csHtml = '<div class="section-label">📚 Case Study</div>'+
+      '<div class="case-study-box">'+
+        '<div class="cs-q">❓ Question</div>'+
+        '<div class="cs-q-text">'+hl(t.csQ || '—')+'</div>'+
+        '<div class="cs-ans-lbl">✅ Answer</div>'+
+        '<div class="cs-ans-text">'+hl(t.csA || '—')+'</div>'+
+      '</div>';
+  }
+
+  return '<div class="topic-block" id="tb-'+dayId+'-'+ti+'">'+
+    '<div class="topic-name">📌 '+hl(t.name)+'</div>'+
+    ptsHtml+
+    detailHtml+
+    noteHtml+
+    ssHtml+
+    csHtml+
+  '</div>';
+}
+
+// ── PASTE SYSTEM ──
+var activePassteDayId = null, activePasteTi = null;
+
+function activatePaste(dayId, ti) {
+  activePassteDayId = dayId;
+  activePasteTi = ti;
+  var zone = document.getElementById('pz-'+dayId+'-'+ti);
+  if (zone) {
+    zone.style.borderColor = 'var(--sky)';
+    zone.style.background = '#eff6ff';
+    var hint = zone.querySelector('.ps');
+    if (hint) { hint.textContent = '✅ Zone active! Now press Ctrl+V to paste'; hint.style.color = 'var(--sky)'; }
+  }
+  zone.setAttribute('tabindex','0');
+  zone.focus();
+}
+
+function attachPasteListeners() {
+  document.addEventListener('paste', function(e) {
+    var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        var blob = items[i].getAsFile();
+        if (activePassteDayId !== null && activePasteTi !== null) {
+          saveImage(blob, activePassteDayId, activePasteTi);
+          activePassteDayId = null; activePasteTi = null;
+        }
+        break;
+      }
+    }
+  });
+}
+
+function handleDrop(e, dayId, ti) {
+  e.preventDefault();
+  var zone = document.getElementById('pz-'+dayId+'-'+ti);
+  if (zone) zone.classList.remove('drag-over');
+  var files = e.dataTransfer.files;
+  if (files && files[0] && files[0].type.indexOf('image') !== -1) {
+    saveImage(files[0], dayId, ti);
+  }
+}
+
+function triggerFile(dayId, ti) {
+  var el = document.getElementById('fi-'+dayId+'-'+ti);
+  if (el) el.click();
+}
+
+function handleFile(dayId, ti, input) {
+  var file = input.files[0];
+  if (file) saveImage(file, dayId, ti);
+}
+
+function saveImage(blob, dayId, ti) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var d = data.find(function(x){ return x.id === dayId; });
+    if (d && d.topics[ti]) { d.topics[ti].screenshot = e.target.result; save(); renderNotes(); }
+  };
+  reader.readAsDataURL(blob);
+}
+
+function removeShot(dayId, ti) {
+  if (!confirm('Remove screenshot?')) return;
+  var d = data.find(function(x){ return x.id === dayId; });
+  if (d && d.topics[ti]) { d.topics[ti].screenshot = null; save(); renderNotes(); }
+}
+
+// ── DAY ACTIONS ──
+function toggleDay(id) {
+  var d = data.find(function(x){ return x.id === id; });
+  if (d) { d.open = !d.open; save(); renderNotes(); }
+}
+function filterDay(id, el) {
+  activeDayTab = id;
+  document.querySelectorAll('.dtab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderNotes();
+}
+function handleSearch() {
+  searchQ = document.getElementById('searchInput').value.toLowerCase().trim();
+  renderNotes();
+}
+
+function openDayModal() {
+  document.getElementById('newDate').value = todayStr();
+  document.getElementById('newTitle').value = '';
+  document.getElementById('dayModal').classList.add('open');
+}
+function closeDayModal() { document.getElementById('dayModal').classList.remove('open'); }
+function addDay() {
+  var date = document.getElementById('newDate').value;
+  var title = document.getElementById('newTitle').value.trim();
+  if (!date || !title) { alert('Please fill in date and title'); return; }
+  data.unshift({ id: 'day_'+Date.now(), date: date, title: title, topics: [], open: true });
+  save(); closeDayModal(); renderNotes();
+}
+
+function openTopicModal(dayId) {
+  curDayId = dayId;
+  ['tName','tPts','tDetail','tNote','tCsQ','tCsA'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('topicModal').classList.add('open');
+}
+function closeTopicModal() { document.getElementById('topicModal').classList.remove('open'); }
+function addTopic() {
+  var name = document.getElementById('tName').value.trim();
+  var raw = document.getElementById('tPts').value.trim();
+  var detail = document.getElementById('tDetail').value.trim();
+  var myNote = document.getElementById('tNote').value.trim();
+  var csQ = document.getElementById('tCsQ').value.trim();
+  var csA = document.getElementById('tCsA').value.trim();
+  if (!name) { alert('Enter a topic name'); return; }
+  var pointers = raw ? raw.split('\n').map(function(p){ return p.trim(); }).filter(Boolean) : [];
+  var d = data.find(function(x){ return x.id === curDayId; });
+  if (d) { d.topics.push({ name: name, pointers: pointers, detail: detail, myNote: myNote, csQ: csQ, csA: csA, screenshot: null }); }
+  save(); closeTopicModal(); renderNotes();
+}
+
+// ── SUMMARY ──
+function renderSummary() {
+  var sel = document.getElementById('summaryFilter');
+  var chosen = sel.value;
+  var groups = {};
+  data.forEach(function(day) {
+    day.topics.forEach(function(t) {
+      var key = t.name.toLowerCase().trim();
+      if (!groups[key]) groups[key] = { name: t.name, entries: [] };
+      groups[key].entries.push({ day: day, t: t });
+    });
+  });
+  var prev = sel.value;
+  sel.innerHTML = '<option value="all">All Topics</option>';
+  Object.values(groups).forEach(function(g){ sel.innerHTML += '<option value="'+g.name+'">'+g.name+'</option>'; });
+  sel.value = prev;
+
+  var list = Object.values(groups).filter(function(g){ return chosen==='all'||g.name===chosen; });
+  var div = document.getElementById('summaryContent');
+  if (!list.length) { div.innerHTML = '<div class="empty"><div class="ei">📊</div><h3>No topics yet</h3><p>Add topics in Notes view</p></div>'; return; }
+
+  div.innerHTML = list.map(function(g) {
+    var entries = g.entries.map(function(e) {
+      var pts = e.t.pointers.map(function(p){ return '<li>'+p+'</li>'; }).join('');
+      var detail = e.t.detail ? '<div class="detail-notes" style="margin:6px 0">'+e.t.detail+'</div>' : '';
+      var note = e.t.myNote ? '<div class="mynote"><b>💬</b> '+e.t.myNote+'</div>' : '';
+      var cs = (e.t.csQ||e.t.csA) ? '<div class="case-study-box" style="margin-top:6px"><div class="cs-q">❓ '+e.t.csQ+'</div><div class="cs-ans-lbl">✅ Answer</div><div class="cs-ans-text">'+e.t.csA+'</div></div>' : '';
+      return '<div class="sum-tag">📅 '+shortDate(e.day.date)+' — '+e.day.title+'</div>'+
+             (pts?'<ul class="pts" style="margin-bottom:5px">'+pts+'</ul>':'')+detail+note+cs;
+    }).join('<hr style="border:none;border-top:1px dashed var(--border);margin:10px 0">');
+    return '<div class="sum-card"><div class="sum-hdr"><h4>📌 '+g.name+'</h4><span>In '+g.entries.length+' day'+(g.entries.length>1?'s':'')+'</span></div><div class="sum-body">'+entries+'</div></div>';
+  }).join('');
+}
+
+// ── REVISION ──
+function renderRevision() {
+  var items = [];
+  data.forEach(function(day) {
+    day.topics.forEach(function(t) {
+      if (t.myNote || t.detail || t.csQ) items.push({ day: day, t: t });
+    });
+  });
+  var div = document.getElementById('revisionContent');
+  if (!items.length) { div.innerHTML = '<div class="empty"><div class="ei">⚡</div><h3>Nothing yet</h3><p>Add detailed notes or case studies to topics</p></div>'; return; }
+  div.innerHTML = items.map(function(item) {
+    var t = item.t;
+    var noteHtml = t.myNote ? '<div class="qr-note"><b>💬 My Note:</b> '+t.myNote+'</div>' : '';
+    var detHtml = t.detail ? '<div class="qr-detail">'+t.detail+'</div>' : '';
+    var csHtml = (t.csQ||t.csA) ? '<div class="qr-case"><b style="color:#6b21a8">❓ Case:</b> '+t.csQ+'<br><b style="color:var(--green)">✅ Ans:</b> '+t.csA+'</div>' : '';
+    return '<div class="qr-card"><div class="qr-top">📌 '+t.name+'</div><div class="qr-day">📅 '+fullDate(item.day.date)+' · '+item.day.title+'</div>'+noteHtml+detHtml+csHtml+'</div>';
+  }).join('');
+}
+
+// ── FLASHCARDS ──
+function fillFcFilters() {
+  var ds = document.getElementById('fcDay'), ts = document.getElementById('fcTopic');
+  var pd = ds.value, pt = ts.value;
+  ds.innerHTML = '<option value="all">All Days</option>';
+  data.forEach(function(d){ ds.innerHTML += '<option value="'+d.id+'">'+shortDate(d.date)+' — '+d.title+'</option>'; });
+  ds.value = pd||'all';
+  ts.innerHTML = '<option value="all">All Topics</option>';
+  var seen = {};
+  data.forEach(function(d){ d.topics.forEach(function(t){ if (!seen[t.name]) { seen[t.name]=1; ts.innerHTML += '<option value="'+t.name+'">'+t.name+'</option>'; } }); });
+  ts.value = pt||'all';
+}
+
+function buildCards() {
+  var df = document.getElementById('fcDay').value, tf = document.getElementById('fcTopic').value;
+  fcCards = [];
+  data.forEach(function(day) {
+    if (df!=='all' && day.id!==df) return;
+    day.topics.forEach(function(t) {
+      if (tf!=='all' && t.name!==tf) return;
+      t.pointers.forEach(function(p){ fcCards.push({ q: 'Topic: "'+t.name+'" — What is this pointer?', a: p }); });
+      if (t.myNote) fcCards.push({ q: 'Your personal note on: "'+t.name+'"?', a: t.myNote });
+      if (t.csQ) fcCards.push({ q: '📚 Case Study: '+t.csQ, a: t.csA || 'No answer added yet' });
+    });
+  });
+  for (var i = fcCards.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1)), tmp = fcCards[i]; fcCards[i] = fcCards[j]; fcCards[j] = tmp;
+  }
+  fcIdx = 0; fcFlip = false;
+  showCard();
+}
+
+function showCard() {
+  document.getElementById('fcInner').classList.remove('flipped');
+  fcFlip = false;
+  if (!fcCards.length) {
+    document.getElementById('fcQ').textContent = 'No flashcards. Add topics with pointers.';
+    document.getElementById('fcA').textContent = '—';
+    document.getElementById('fcCtr').textContent = '0 / 0';
+    document.getElementById('fcBar').style.width = '0%';
+    return;
+  }
+  var c = fcCards[fcIdx];
+  document.getElementById('fcQ').textContent = c.q;
+  document.getElementById('fcA').textContent = c.a;
+  document.getElementById('fcCtr').textContent = (fcIdx+1)+' / '+fcCards.length;
+  document.getElementById('fcBar').style.width = (((fcIdx+1)/fcCards.length)*100)+'%';
+}
+function flipCard() { fcFlip=!fcFlip; document.getElementById('fcInner').classList.toggle('flipped',fcFlip); }
+function nextCard() { if (fcIdx<fcCards.length-1){ fcIdx++; showCard(); } }
+function prevCard() { if (fcIdx>0){ fcIdx--; showCard(); } }
+
+// ── EXPORT ──
+function fillExpFilter() {
+  var sel = document.getElementById('expDayFilter');
+  sel.innerHTML = '<option value="all">All Days</option>';
+  data.forEach(function(d){ sel.innerHTML += '<option value="'+d.id+'">'+shortDate(d.date)+' — '+d.title+'</option>'; });
+}
+function getExpDays() {
+  var v = document.getElementById('expDayFilter').value;
+  return v==='all' ? data : data.filter(function(d){ return d.id===v; });
+}
+
+function exportPDF() {
+  var days = getExpDays();
+  var oPts = document.getElementById('expPts').checked;
+  var oDet = document.getElementById('expDet').checked;
+  var oNts = document.getElementById('expNts').checked;
+  var oCs = document.getElementById('expCs').checked;
+  var oFc = document.getElementById('expFc').checked;
+
+  var html = '<html><head><style>'+
+    'body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:28px;color:#1e293b}'+
+    'h1{color:#0f1f3d;font-size:20px;border-bottom:3px solid #1a56db;padding-bottom:7px;margin-bottom:4px}'+
+    'h2{color:#1a56db;font-size:15px;margin:22px 0 5px}'+
+    'h3{color:#0f1f3d;font-size:12px;margin:14px 0 4px;padding-left:9px;border-left:3px solid #3b82f6}'+
+    '.lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#3b82f6;margin-bottom:3px}'+
+    'ul{margin:3px 0 7px 18px}li{font-size:11px;line-height:1.7}'+
+    '.detail{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:5px;padding:7px 10px;font-size:11px;color:#1e3a5f;margin:5px 0;white-space:pre-wrap;line-height:1.7}'+
+    '.note{background:#fffbeb;border:1px solid #fcd34d;border-radius:5px;padding:5px 9px;font-size:10px;color:#92400e;margin:5px 0}'+
+    '.cs-box{background:#fdf4ff;border:1px solid #e9d5ff;border-radius:5px;padding:8px 10px;margin:5px 0}'+
+    '.cs-q{font-size:11px;font-weight:600;color:#6b21a8;margin-bottom:4px}'+
+    '.cs-a{font-size:11px;color:#064e3b;background:#ecfdf5;border-radius:4px;padding:5px 7px}'+
+    '.day-box{background:#f0f4ff;border-radius:7px;padding:11px 14px;margin-bottom:18px;page-break-inside:avoid}'+
+    'table{width:100%;border-collapse:collapse;margin-top:7px}'+
+    'th{background:#0f1f3d;color:#fff;padding:7px 9px;font-size:10px;text-align:left}'+
+    'td{padding:6px 9px;font-size:10px;border-bottom:1px solid #e2e8f0;vertical-align:top}'+
+    'tr:nth-child(even) td{background:#f8faff}'+
+    '</style></head><body>'+
+    '<h1>📓 BA Class Notebook – COEPD</h1>'+
+    '<p style="font-size:10px;color:#64748b">Exported: '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+'</p>';
+
+  days.forEach(function(day, i) {
+    html += '<div class="day-box"><h2>Day '+(i+1)+': '+day.title+'</h2><p style="font-size:10px;color:#64748b">📅 '+fullDate(day.date)+'</p>';
+    day.topics.forEach(function(t) {
+      html += '<h3>📌 '+t.name+'</h3>';
+      if (oPts && t.pointers.length) {
+        html += '<div class="lbl">Key Pointers</div><ul>'+t.pointers.map(function(p){ return '<li>'+p+'</li>'; }).join('')+'</ul>';
+      }
+      if (oDet && t.detail) html += '<div class="lbl">Detailed Notes</div><div class="detail">'+t.detail+'</div>';
+      if (oNts && t.myNote) html += '<div class="note">💬 <strong>My Note:</strong> '+t.myNote+'</div>';
+      if (oCs && t.csQ) {
+        html += '<div class="cs-box"><div class="cs-q">❓ Case Study: '+t.csQ+'</div><div class="lbl" style="margin-top:5px">Answer</div><div class="cs-a">'+t.csA+'</div></div>';
+      }
+    });
+    html += '</div>';
+  });
+
+  if (oFc) {
+    var cards = [];
+    days.forEach(function(day) {
+      day.topics.forEach(function(t) {
+        t.pointers.forEach(function(p){ cards.push([t.name, p, 'Pointer']); });
+        if (t.myNote) cards.push([t.name, t.myNote, 'My Note']);
+        if (t.csQ) cards.push(['Case: '+t.csQ, t.csA, 'Case Study']);
+      });
+    });
+    if (cards.length) {
+      html += '<h2>🃏 Flashcard Q&A</h2><table><tr><th>Topic / Question</th><th>Answer / Key Point</th><th>Type</th></tr>'+
+        cards.map(function(c){ return '<tr><td>'+c[0]+'</td><td>'+c[1]+'</td><td>'+c[2]+'</td></tr>'; }).join('')+'</table>';
+    }
+  }
+
+  html += '</body></html>';
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); setTimeout(function(){ w.print(); }, 600); }
+  else alert('Please allow popups for PDF export');
+}
+
+function exportWord() {
+  var days = getExpDays();
+  var oPts = document.getElementById('expPts').checked;
+  var oDet = document.getElementById('expDet').checked;
+  var oNts = document.getElementById('expNts').checked;
+  var oCs = document.getElementById('expCs').checked;
+  var oFc = document.getElementById('expFc').checked;
+
+  var rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}'+
+    '{\\colortbl;\\red15\\green31\\blue61;\\red26\\green86\\blue219;\\red107\\green33\\blue168;\\red6\\green78\\blue59;}'+
+    '\\f0\\fs28\\b\\cf1 BA Class Notebook - COEPD\\b0\\par'+
+    '\\fs18 Exported: '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+'\\par\\par';
+
+  days.forEach(function(day, i) {
+    rtf += '\\fs26\\b\\cf2 Day '+(i+1)+': '+escRtf(day.title)+'\\b0\\par';
+    rtf += '\\fs18\\cf1 '+fullDate(day.date)+'\\par\\par';
+    day.topics.forEach(function(t) {
+      rtf += '\\fs22\\b\\cf1 '+escRtf(t.name)+'\\b0\\par';
+      if (oPts && t.pointers.length) {
+        rtf += '\\fs18\\b Key Pointers:\\b0\\par';
+        t.pointers.forEach(function(p){ rtf += '\\fs20   - '+escRtf(p)+'\\par'; });
+      }
+      if (oDet && t.detail) rtf += '\\par\\fs18\\b Detailed Notes:\\b0\\par\\fs20 '+escRtf(t.detail)+'\\par';
+      if (oNts && t.myNote) rtf += '\\par\\fs18\\b\\cf2 My Note:\\b0\\cf1\\fs20 '+escRtf(t.myNote)+'\\par';
+      if (oCs && t.csQ) {
+        rtf += '\\par\\fs18\\b\\cf3 Case Study:\\b0\\par\\fs20 Q: '+escRtf(t.csQ)+'\\par';
+        rtf += '\\fs20\\cf4 A: '+escRtf(t.csA)+'\\cf1\\par';
+      }
+      rtf += '\\par';
+    });
+    rtf += '\\par';
+  });
+
+  if (oFc) {
+    rtf += '\\fs24\\b\\cf1 Flashcard Q&A\\b0\\par\\par';
+    days.forEach(function(day) {
+      day.topics.forEach(function(t) {
+        t.pointers.forEach(function(p){
+          rtf += '\\fs20\\b Q:\\b0 ('+escRtf(t.name)+') '+escRtf(p)+'\\par\\par';
+        });
+        if (t.csQ) rtf += '\\fs20\\b Case Q:\\b0 '+escRtf(t.csQ)+'\\par\\b Ans:\\b0 '+escRtf(t.csA)+'\\par\\par';
+      });
+    });
+  }
+
+  rtf += '}';
+  var blob = new Blob([rtf], { type: 'application/msword' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'BA_ClassNotes_COEPD.doc'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escRtf(s) {
+  return (s||'').replace(/\\/g,'\\\\').replace(/\{/g,'\\{').replace(/\}/g,'\\}').replace(/\n/g,'\\par ');
+}
+
+// ── HELPERS ──
+function hl(text) {
+  if (!searchQ) return text;
+  return text.replace(new RegExp('('+searchQ.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>');
+}
+function fullDate(d) { return new Date(d).toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}); }
+function shortDate(d) { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}); }
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// ── SEED ──
+function seedData() {
+  return [{
+    id:'day_seed1', date:todayStr(), title:'Chapter 1 – Introduction to BA', open:true,
+    topics:[
+      {
+        name:'BABOK V3 Overview',
+        pointers:['BABOK = Business Analysis Body of Knowledge','Published by IIBA','Version 3 is the current standard','Covers 6 Knowledge Areas'],
+        detail:'BABOK V3 was released in 2015. It replaced BABOK V2 and is now the globally accepted standard for Business Analysis. It defines 6 Knowledge Areas (KAs) which are NOT sequential phases — they overlap and apply across the entire project lifecycle. Each KA contains Tasks, Inputs, Outputs, Techniques, and Stakeholders.',
+        myNote:'KAs are not sequential – they overlap throughout the project lifecycle.',
+        csQ:'A company wants to improve their customer onboarding process. As a BA, which BABOK knowledge area guides your initial approach?',
+        csA:'Strategy Analysis — because we first need to understand the current state, identify the business need, define the future state, and assess risks before jumping to requirements.',
+        screenshot:null
+      },
+      {
+        name:'4 Types of Requirements',
+        pointers:['Business Requirements – high level org goals','Stakeholder Requirements – what stakeholders need','Solution Requirements – what the system must do','Transition Requirements – change management needs'],
+        detail:'Requirements are categorized to help BAs manage them systematically. Business Requirements define WHY the project exists. Stakeholder Requirements define WHAT people need. Solution Requirements define HOW the system should behave (functional + non-functional). Transition Requirements define what is needed to move from current to future state without disruption.',
+        myNote:'In 401k context: Business=IRS compliance goal, Stakeholder=TPA/Plan Admin needs, Solution=platform features, Transition=data migration.',
+        csQ:'A 401k recordkeeper is replacing their participant portal. List one example of each of the 4 requirement types.',
+        csA:'Business: Reduce participant login errors by 30%. Stakeholder: Plan Admin needs daily enrollment report. Solution: System must auto-calculate contribution limits per IRS rules. Transition: Historical contribution data from old system must be migrated with zero data loss.',
+        screenshot:null
+      }
+    ]
+  }];
+}
+
+load();
+renderNotes();
+</script>
+</body>
+</html>
